@@ -1,0 +1,153 @@
+using Unity.Cinemachine;
+using UnityEngine;
+using Starport.PlayerState;
+using NaughtyAttributes;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
+
+namespace Starport.Characters
+{
+    public class PlayerStateManager : MonoBehaviour
+    {
+        [field: SerializeField] 
+        public CinemachineCamera FirstPersonCamera { get; private set; }
+
+        [SerializeField] private Renderer[] _hideableRenderers;
+        [SerializeField] private bool _initializeOnAwake = true;
+
+        [SerializeField, BoxGroup("Base States"), ReadOnly]
+        private PlayerStateBase _currentBaseState;
+        [SerializeField, BoxGroup("Base States")]
+        private PlayerStateBase _defaultBaseState, _startBaseState;
+
+        [SerializeField, BoxGroup("Locomotion States"), ReadOnly]
+        private PlayerStateBase _currentLocomotionState;
+        [SerializeField, BoxGroup("Locomotion States")]
+        private PlayerStateBase _defaultLocomotionState, _startLocomotionState;
+
+        private bool _initialized = false;
+        private Dictionary<Renderer, ShadowCastingMode> _rendererDefaultShadowCastingMode;
+
+        public PlayerInputManager InputManager { get; private set; }
+
+        public void ChangeBaseState(PlayerStateBase nextState) => ChangeState(ref _currentBaseState, nextState);
+        public void ChangeLocomotionState(PlayerStateBase nextState) => ChangeState(ref _currentLocomotionState, nextState);
+
+        public void InitializeStateManager()
+        {
+            InputManager = PlayerInputManager.Instance;
+            InputManager.InputEnabled = true;
+
+            ResetCamera();
+            HideRenderers();
+
+            StartInitialState(ref _currentBaseState, _startBaseState, _defaultBaseState);
+            StartInitialState(ref _currentLocomotionState, _startBaseState, _defaultBaseState);
+            _initialized = true;
+        }
+
+        public void ResetCamera()
+        {
+            
+        }
+
+        public void HideRenderers()
+        {
+            _rendererDefaultShadowCastingMode ??= GenerateShadowCastingMode();
+            foreach(var renderer in _rendererDefaultShadowCastingMode.Keys)
+            {
+                if (_rendererDefaultShadowCastingMode[renderer] == ShadowCastingMode.Off)
+                    continue;
+                renderer.shadowCastingMode = ShadowCastingMode.ShadowsOnly;
+            }
+        }
+
+        public void ShowRenderers()
+        {
+            _rendererDefaultShadowCastingMode ??= GenerateShadowCastingMode();
+            foreach (var renderer in _rendererDefaultShadowCastingMode.Keys)
+            {
+                renderer.shadowCastingMode = _rendererDefaultShadowCastingMode[renderer];
+            }
+        }
+
+        private void Start()
+        {
+            if(_initializeOnAwake)
+                InitializeStateManager();
+        }
+
+        private void Update()
+        {
+            float deltaTime = Time.deltaTime;
+            UpdateStates(deltaTime);
+        }
+
+        private void OnDestroy()
+        {
+            StopCurrentState(ref _currentBaseState);
+            StopCurrentState(ref _currentLocomotionState);
+        }
+
+        private Dictionary<Renderer, ShadowCastingMode> GenerateShadowCastingMode()
+        {
+            Dictionary<Renderer, ShadowCastingMode> result = new();
+            if(_hideableRenderers == null)
+                return result;
+
+            foreach(Renderer renderer in _hideableRenderers)
+            {
+                if (renderer == null) continue;
+                if (result.ContainsKey(renderer)) continue;
+
+                result.Add(renderer, renderer.shadowCastingMode);
+            }
+
+            return result;
+        }
+
+        private void UpdateStates(float deltaTime)
+        {
+            if(!_initialized) return;
+            if (deltaTime <= 0f) return;
+
+            if(_currentBaseState != null) 
+                _currentBaseState.UpdateState(deltaTime);
+
+            if (_currentLocomotionState != null)
+                _currentLocomotionState.UpdateState(deltaTime);
+        }
+
+        private void StartInitialState(ref PlayerStateBase currentState, PlayerStateBase startState, PlayerStateBase defaultState)
+        {
+            if (startState != null)
+            {
+                ChangeState(ref currentState, startState);
+                return;
+            }
+
+            ChangeState(ref currentState, defaultState);
+        }
+
+        private void ChangeState(ref PlayerStateBase currentState, PlayerStateBase nextState)
+        {
+            StopCurrentState(ref currentState);
+
+            if (nextState == null) return;
+
+            currentState = Instantiate(nextState);
+            currentState.EnterState(this);
+        }
+
+        private void StopCurrentState(ref PlayerStateBase currentState)
+        {
+            if (currentState == null) return;
+            
+            currentState.ExitState();
+            PlayerStateBase temp = currentState;
+            Destroy(temp);
+
+            currentState = null;
+        }
+    }
+}
