@@ -1,5 +1,7 @@
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 namespace Starport
 {
@@ -32,6 +34,8 @@ namespace Starport
                     _inputActions = new PlayerInputActions();
                     _inputActions.Enable();
                     _inputEnabled = true;
+
+                    InitializeInputEvents();
                 }
                 return _inputActions;
             }
@@ -55,6 +59,8 @@ namespace Starport
 
         public Vector2 MovementInput { get; private set; } = Vector2.zero;
         public Vector2 LookDeltaInput { get; private set; } = Vector2.zero;
+
+        public event UnityAction OnJumpInput;
 
         public Vector3 GetWorldFlatMoveDirection(Camera camera)
         {
@@ -88,6 +94,11 @@ namespace Starport
             UpdateMoveInput();
         }
 
+        private void OnDestroy()
+        {
+            ClearInputEvents();
+        }
+
         private void UpdateLookDelta()
         {
             LookDeltaInput = InputActions.Main.Look.ReadValue<Vector2>();
@@ -116,5 +127,23 @@ namespace Starport
 
             return (flatRight.normalized * MovementInput.x) + (flatFwd.normalized * MovementInput.y);
         }
+
+        private void InitializeInputEvents()
+        {
+            if (InputActions == null)
+                return;
+
+            InputActions.Main.Jump.performed += OnJump;
+        }
+
+        private void ClearInputEvents()
+        {
+            if (InputActions == null)
+                return;
+
+            InputActions.Main.Jump.performed -= OnJump;
+        }
+
+        private void OnJump(InputAction.CallbackContext ctx) => OnJumpInput?.Invoke();
     }
 }

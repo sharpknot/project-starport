@@ -29,9 +29,18 @@ namespace Starport.Characters
         private Dictionary<Renderer, ShadowCastingMode> _rendererDefaultShadowCastingMode;
 
         public PlayerInputManager InputManager { get; private set; }
+        [field:SerializeField]
+        public CharacterMotionController MotionController { get; private set; }
 
         public void ChangeBaseState(PlayerStateBase nextState) => ChangeState(ref _currentBaseState, nextState);
         public void ChangeLocomotionState(PlayerStateBase nextState) => ChangeState(ref _currentLocomotionState, nextState);
+        public void ChangeToDefaultBaseState() => ChangeBaseState(_defaultBaseState);
+        public void ChangeToDefaultLocomotionState() => ChangeLocomotionState(_defaultLocomotionState);
+        public void ChangeToOverallDefaultState()
+        {
+            ChangeToDefaultBaseState();
+            ChangeToDefaultLocomotionState();
+        }
 
         public void InitializeStateManager()
         {
@@ -42,7 +51,11 @@ namespace Starport.Characters
             HideRenderers();
 
             StartInitialState(ref _currentBaseState, _startBaseState, _defaultBaseState);
-            StartInitialState(ref _currentLocomotionState, _startBaseState, _defaultBaseState);
+            StartInitialState(ref _currentLocomotionState, _startLocomotionState, _defaultLocomotionState);
+
+            if(MotionController != null) 
+                MotionController.InitializeMotionController();
+
             _initialized = true;
         }
 

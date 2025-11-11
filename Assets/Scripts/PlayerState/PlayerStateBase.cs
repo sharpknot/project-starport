@@ -3,20 +3,24 @@ using Starport.Characters;
 
 namespace Starport.PlayerState
 {
-    [CreateAssetMenu(fileName = "PlayerStateBase", menuName = "Scriptable Objects/PlayerStateBase")]
     public class PlayerStateBase : ScriptableObject
     {
-        public PlayerStateManager StateManager { get; private set; }
-
+        protected PlayerStateManager StateManager { get; private set; }
+        protected CharacterMotionController MotionController { get; private set; }
+        protected PlayerInputManager InputManager { get; private set; }
         public virtual void EnterState(PlayerStateManager stateManager)
         {
             StateManager = stateManager;
-
+            if(StateManager != null)
+            {
+                MotionController = StateManager.MotionController;
+                InputManager = StateManager.InputManager;
+            }
         }
 
         public virtual void UpdateState(float deltaTime)
         {
-            UpdateLook();
+            
         }
         public virtual void ExitState() { }
 
@@ -45,6 +49,17 @@ namespace Starport.PlayerState
             // Rotate yaw
             StateManager.transform.Rotate(Vector3.up, lookDeltaInput.x, Space.World);
 
+        }
+
+        protected void UpdateInputMovement(float maxSpeed, float deltaTime)
+        {
+            if (StateManager == null) return;
+            if (StateManager.InputManager == null || StateManager.FirstPersonCamera == null) return;
+
+            if(StateManager.MotionController == null) return;
+
+            Vector3 velocity = StateManager.InputManager.GetWorldFlatMoveDirection(StateManager.FirstPersonCamera) * maxSpeed;
+            StateManager.MotionController.SetInputLateralMotion(velocity * deltaTime);
         }
     }
 }
