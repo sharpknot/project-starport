@@ -47,7 +47,6 @@ namespace Starport.Characters
             InputManager = PlayerInputManager.Instance;
             InputManager.InputEnabled = true;
 
-            ResetCamera();
             HideRenderers();
 
             StartInitialState(ref _currentBaseState, _startBaseState, _defaultBaseState);
@@ -59,9 +58,18 @@ namespace Starport.Characters
             _initialized = true;
         }
 
-        public void ResetCamera()
+        public void DisableCamera()
         {
+            if(FirstPersonCamera != null) 
+                FirstPersonCamera.gameObject.SetActive(false);
+        }
+
+        public void EnableAndUseCamera()
+        {
+            if (FirstPersonCamera == null) return;
             
+            FirstPersonCamera.Prioritize();
+            FirstPersonCamera.gameObject.SetActive(true);
         }
 
         public void HideRenderers()

@@ -43,6 +43,9 @@ namespace Starport
         public event UnityAction OnDisconnectAsHost;
         public event UnityAction OnDisconnectAsClient;
 
+        public event UnityAction<ulong> OnClientConnectedAsHost;
+        public event UnityAction<ulong> OnClientDisconnectedAsHost;
+
         public event UnityAction<bool> OnHostingAttemptComplete;
         public event UnityAction<bool> OnJoiningAttemptComplete;
 
@@ -80,6 +83,11 @@ namespace Starport
             // Assign and make persistent
             _instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            Disconnect();
         }
 
         public async Task<bool> StartHosting(int maxConnections)
@@ -123,10 +131,9 @@ namespace Starport
                     Debug.Log($"[RelayManager] Signed in as: {AuthenticationService.Instance.PlayerId}");
                 }
 
-                if (_networkManager == null)
-                    _networkManager = NetworkManager.Singleton;
+                NetworkManager networkManager = NetworkManager.Singleton;
 
-                if (_networkManager == null)
+                if (networkManager == null)
                 {
                     Debug.LogError($"[RelayManager] Unable to start host: Network manager singleton is null!");
                     _isDoingRelayProcess = false;
@@ -139,9 +146,8 @@ namespace Starport
                 Debug.Log("[RelayManager] Host Relay allocation created.");
 
                 // Get transport
-                if (_transport == null)
-                    _transport = _networkManager.GetComponent<UnityTransport>();
-                if (_transport == null)
+                UnityTransport transport = networkManager.GetComponent<UnityTransport>();
+                if (transport == null)
                 {
                     Debug.LogError($"[RelayManager] Unable to start host: Transport is null!");
                     _isDoingRelayProcess = false;
@@ -151,12 +157,12 @@ namespace Starport
                 }
 
                 RelayServerData serverData = AllocationUtils.ToRelayServerData(allocation, "dtls");
-                _transport.SetRelayServerData(serverData);
+                transport.SetRelayServerData(serverData);
 
                 string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
                 Debug.Log($"[RelayManager] Host Relay Join Code: {joinCode}");
 
-                if(!_networkManager.StartHost())
+                if(!networkManager.StartHost())
                 {
                     Debug.LogError($"[RelayManager] Unable to start host: Network manager failed to start host!");
                     _isDoingRelayProcess = false;
@@ -168,6 +174,10 @@ namespace Starport
                 _hostJoinCode = joinCode;
                 _isDoingRelayProcess = false;
                 IsAttemptingHost = false;
+
+                _networkManager = networkManager;
+                _transport = transport;
+
                 OnHostingAttemptComplete?.Invoke(true);
                 SubscribeDisconnectEvents();
             }
@@ -223,10 +233,8 @@ namespace Starport
                     Debug.Log($"[RelayManager] Signed in as: {AuthenticationService.Instance.PlayerId}");
                 }
 
-                if (_networkManager == null)
-                    _networkManager = NetworkManager.Singleton;
-
-                if (_networkManager == null)
+                NetworkManager networkManager = NetworkManager.Singleton;
+                if (networkManager == null)
                 {
                     Debug.LogError($"[RelayManager] Unable to join host: Network manager singleton is null!");
                     _isDoingRelayProcess = false;
@@ -239,9 +247,9 @@ namespace Starport
                 JoinAllocation joinAlloc = await RelayService.Instance.JoinAllocationAsync(joinCode);
                 Debug.Log("[RelayManager] Successfully joined Relay allocation");
 
-                if (_transport == null)
-                    _transport = _networkManager.GetComponent<UnityTransport>();
-                if (_transport == null)
+
+                UnityTransport transport = networkManager.GetComponent<UnityTransport>();
+                if (transport == null)
                 {
                     Debug.LogError("[RelayManager] Unable to join host: UnityTransport is null");
                     _isDoingRelayProcess = false;
@@ -251,9 +259,9 @@ namespace Starport
                 }
 
                 RelayServerData serverData = AllocationUtils.ToRelayServerData(joinAlloc, "dtls");
-                _transport.SetRelayServerData(serverData);
+                transport.SetRelayServerData(serverData);
 
-                if (!_networkManager.StartClient())
+                if (!networkManager.StartClient())
                 {
                     Debug.LogError("[RelayManager] Unable to join host: NetworkManager failed to start client");
                     _isDoingRelayProcess = false;
@@ -266,6 +274,10 @@ namespace Starport
                 _clientJoinCode = joinCode;
                 _isDoingRelayProcess = false;
                 IsAttemptingJoin = false;
+
+                _networkManager = networkManager;
+                _transport = transport;
+
                 OnJoiningAttemptComplete?.Invoke(true);
                 SubscribeDisconnectEvents();
 
@@ -298,14 +310,20 @@ namespace Starport
                 OnDisconnectAsClient?.Invoke();
 
             ClearRelayData();
-
+            Debug.Log($"[RelayManager] Disconnected!");
             return true;
         }
 
         private void UnsubscribeDisconnectEvents()
         {
             if (_networkManager != null)
+            {
                 _networkManager.OnClientDisconnectCallback -= NetworkManagerDisconnect;
+
+                _networkManager.OnClientConnectedCallback -= ClientConnectedAsHost;
+                _networkManager.OnClientDisconnectCallback -= ClientDisconnectedAsHost;
+            }
+                
             if (_transport != null)
                 _transport.OnTransportEvent -= TransportEventDisconnect;
 
@@ -317,7 +335,14 @@ namespace Starport
             UnsubscribeDisconnectEvents();
 
             if (_networkManager != null)
+            {
                 _networkManager.OnClientDisconnectCallback += NetworkManagerDisconnect;
+                if(_networkManager.IsHost)
+                {
+                    _networkManager.OnClientConnectedCallback += ClientConnectedAsHost;
+                    _networkManager.OnClientDisconnectCallback += ClientDisconnectedAsHost;
+                }
+            }
 
             if (_transport != null)
                 _transport.OnTransportEvent += TransportEventDisconnect;
@@ -380,6 +405,20 @@ namespace Starport
             _hostAllocation = null;
             _hostJoinCode = "";
             _clientJoinCode = "";
+            _networkManager = null;
+            _transport = null;
+        }
+
+        private void ClientConnectedAsHost(ulong clientId)
+        {
+            if(clientId == NetworkManager.ServerClientId) return;
+            OnClientConnectedAsHost?.Invoke(clientId);
+        }
+
+        private void ClientDisconnectedAsHost(ulong clientId)
+        {
+            if (clientId == NetworkManager.ServerClientId) return;
+            OnClientDisconnectedAsHost?.Invoke(clientId);
         }
     }
 }
