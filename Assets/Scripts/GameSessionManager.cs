@@ -5,6 +5,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
+using Starport.UI;
+using UnityEngine.SceneManagement;
 
 namespace Starport
 {
@@ -18,11 +21,20 @@ namespace Starport
 
         [SerializeField] private NetworkObject _prespawnObject;
         [SerializeField] private int _hostConnectionCount = 5;
-        [SerializeField] private bool _startOnAwake = false;
+
         private Dictionary<ulong, NetworkObject> _clientObjects;
         private NetworkObject _hostObject;
         [field: SerializeField, ReadOnly]
         public string HostJoinCode { get; private set; } = "";
+
+        [SerializeField, BoxGroup("Disconnect Message")]
+        private string _messageDisconnectAsHost = "Lost connection as host!";
+        [SerializeField, BoxGroup("Disconnect Message")]
+        private string _messageDisconnectAsClient = "Disconnected from host!";
+        [SerializeField, BoxGroup("Disconnect Message")]
+        private string _messageUnableToConnectToHost = "Unable to connect to host!";
+        [SerializeField, BoxGroup("Disconnect Message")]
+        private string _messageUnableToCreateHost = "Unable to create host!";
 
         public void Disconnect()
         {
@@ -42,15 +54,20 @@ namespace Starport
             _relayManager = RelayManager.Instance;
             _stateManager = GameStateManager.Instance;
 
-            if (_startOnAwake)
-            {
-                if (_stateManager.IsAttemptingToJoinHost(out string targetJoinCode))
-                    _ = StartJoiningHost(targetJoinCode);
-                else if (_stateManager.IsAttemptingToHost())
-                    _ = StartHosting();
-                else
-                    StartOffline();
-            }
+            // Make this the active scene
+            SceneManager.SetActiveScene(gameObject.scene);
+
+            _stateManager.OnSceneFinishLoaded?.Invoke();
+
+            UIEvents.ShowSessionStartCover?.Invoke("");
+
+            if (_stateManager.IsAttemptingToJoinHost(out string targetJoinCode))
+                _ = StartJoiningHost(targetJoinCode);
+            else if (_stateManager.IsAttemptingToHost())
+                _ = StartHosting();
+            else if(_stateManager.IsAttemptingOffline())
+                StartOffline();
+
         }
 
         private void OnDestroy()
@@ -71,6 +88,8 @@ namespace Starport
 
         private async Task StartHosting()
         {
+            UIEvents.ShowSessionStartCover?.Invoke("Starting host...");
+
             bool success = await _relayManager.StartHosting(_hostConnectionCount);
             _stateManager.StopHostAttempt();
 
@@ -88,6 +107,8 @@ namespace Starport
             _relayManager.OnClientConnectedAsHost += ClientConnectedAsHost;
             _relayManager.OnClientDisconnectedAsHost += ClientDisconnectedAsHost;      
             _relayManager.OnDisconnectAsHost += DisconnectAsHost;
+
+            UIEvents.HideSessionStartCover?.Invoke();
         }
 
         private void SpawnHostCharacter()
@@ -109,7 +130,8 @@ namespace Starport
 
         private void HostingFailed()
         {
-
+            UIEvents.ShowSessionStartCover?.Invoke("Hosting failed!");
+            UIEvents.ShowDisconnectWindow?.Invoke(_messageUnableToCreateHost);
         }
 
         private void ClientConnectedAsHost(ulong clientId)
@@ -155,6 +177,8 @@ namespace Starport
 
         private async Task StartJoiningHost(string joinCode)
         {
+            UIEvents.ShowSessionStartCover?.Invoke($"Joining host (Join Code: {joinCode})...");
+
             bool success = await _relayManager.StartJoining(joinCode);
             _stateManager.StopJoinHostAttempt();
 
@@ -166,16 +190,19 @@ namespace Starport
         {
             if (_relayManager != null)
                 _relayManager.OnDisconnectAsClient += DisconnectAsClient;
+
+            UIEvents.HideSessionStartCover?.Invoke();
         }
 
         private void JoiningFailed()
         {
-
+            UIEvents.ShowSessionStartCover?.Invoke($"Failed to join host!");
+            UIEvents.ShowDisconnectWindow?.Invoke(_messageUnableToConnectToHost);
         }
 
         private void StartOffline()
         {
-
+            UIEvents.HideSessionStartCover?.Invoke();
         }
 
         private void DisconnectAsHost()
@@ -183,6 +210,7 @@ namespace Starport
             if(_relayManager != null)
                 _relayManager.OnDisconnectAsHost -= DisconnectAsHost;
 
+            UIEvents.ShowDisconnectWindow?.Invoke(_messageDisconnectAsHost);
             Debug.Log("[GameSessionManager] DisconnectAsHost");
         }
 
@@ -191,6 +219,7 @@ namespace Starport
             if (_relayManager != null)
                 _relayManager.OnDisconnectAsClient -= DisconnectAsClient;
 
+            UIEvents.ShowDisconnectWindow?.Invoke(_messageDisconnectAsClient);
             Debug.Log("[GameSessionManager] DisconnectAsClient");
         }
 

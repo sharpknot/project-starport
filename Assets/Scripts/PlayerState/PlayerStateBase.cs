@@ -27,6 +27,7 @@ namespace Starport.PlayerState
         protected void UpdateLook()
         {
             if (StateManager == null) return;
+            if (StateManager.HasOpenedOptionsMenu) return;
             if (StateManager.InputManager == null || StateManager.FirstPersonCamera == null) return;
 
             float minPitchAngle = -89f;
@@ -54,6 +55,7 @@ namespace Starport.PlayerState
         protected void UpdateInputMovement(float maxSpeed, float deltaTime)
         {
             if (StateManager == null) return;
+            if (StateManager.HasOpenedOptionsMenu) return;
             if (StateManager.InputManager == null || StateManager.FirstPersonCamera == null) return;
 
             if(StateManager.MotionController == null) return;

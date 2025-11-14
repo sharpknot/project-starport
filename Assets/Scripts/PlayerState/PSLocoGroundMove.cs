@@ -81,7 +81,9 @@ namespace Starport.PlayerState
 
         private void OnJumpInput()
         {
-            if(_jumpLocomotionState != null) 
+            if (StateManager == null) return;
+            if (StateManager.HasOpenedOptionsMenu) return;
+            if (_jumpLocomotionState != null) 
                 StateManager.ChangeLocomotionState(_jumpLocomotionState);            
         }
     }

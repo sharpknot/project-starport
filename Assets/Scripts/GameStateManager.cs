@@ -1,5 +1,6 @@
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Starport
 {
@@ -22,6 +23,8 @@ namespace Starport
             }
         }
         private static GameStateManager _instance;
+
+        public UnityAction OnSceneFinishLoaded;
 
         private void Awake()
         {
@@ -51,5 +54,18 @@ namespace Starport
         public void StartHostAttempt() => _isAttemptingToHost = true;
         public void StopHostAttempt() => _isAttemptingToHost = false;
 
+        private bool _isOffline;
+        public bool IsAttemptingOffline() => _isOffline;
+        public void StartOfflineAttempt() => _isOffline = true;
+        public void StopOfflineAttempt() => _isOffline = false; 
+
+        private string _nextScene = string.Empty;
+        public bool HasNextScene(out string nextScene)
+        {
+            nextScene = _nextScene;
+            return !string.IsNullOrEmpty(nextScene);
+        }
+        public void ClearNextScene() => _nextScene = string.Empty;
+        public void SetNextScene(string nextScene) => _nextScene = nextScene;
     }
 }

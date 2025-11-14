@@ -60,7 +60,7 @@ namespace Starport
         public Vector2 MovementInput { get; private set; } = Vector2.zero;
         public Vector2 LookDeltaInput { get; private set; } = Vector2.zero;
 
-        public event UnityAction OnJumpInput;
+        public event UnityAction OnJumpInput, OnOptionsMenuInput;
 
         public Vector3 GetWorldFlatMoveDirection(Camera camera)
         {
@@ -134,6 +134,7 @@ namespace Starport
                 return;
 
             InputActions.Main.Jump.performed += OnJump;
+            InputActions.Main.OptionsMenu.performed += OnOptionsMenu;
         }
 
         private void ClearInputEvents()
@@ -142,8 +143,10 @@ namespace Starport
                 return;
 
             InputActions.Main.Jump.performed -= OnJump;
+            InputActions.Main.OptionsMenu.performed -= OnOptionsMenu;
         }
 
         private void OnJump(InputAction.CallbackContext ctx) => OnJumpInput?.Invoke();
+        private void OnOptionsMenu(InputAction.CallbackContext ctx) => OnOptionsMenuInput?.Invoke();
     }
 }

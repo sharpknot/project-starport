@@ -4,6 +4,7 @@ using Starport.PlayerState;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
+using Starport.UI;
 
 namespace Starport.Characters
 {
@@ -32,6 +33,9 @@ namespace Starport.Characters
         [field:SerializeField]
         public CharacterMotionController MotionController { get; private set; }
 
+        [field: SerializeField, ReadOnly] 
+        public bool HasOpenedOptionsMenu { get; private set; } = false;
+
         public void ChangeBaseState(PlayerStateBase nextState) => ChangeState(ref _currentBaseState, nextState);
         public void ChangeLocomotionState(PlayerStateBase nextState) => ChangeState(ref _currentLocomotionState, nextState);
         public void ChangeToDefaultBaseState() => ChangeBaseState(_defaultBaseState);
@@ -46,6 +50,8 @@ namespace Starport.Characters
         {
             InputManager = PlayerInputManager.Instance;
             InputManager.InputEnabled = true;
+
+            UIEvents.HiddenOptionsMenu += OnOptionsMenuClosed;
 
             HideRenderers();
 
@@ -108,6 +114,8 @@ namespace Starport.Characters
         {
             StopCurrentState(ref _currentBaseState);
             StopCurrentState(ref _currentLocomotionState);
+
+            UIEvents.HiddenOptionsMenu -= OnOptionsMenuClosed;
         }
 
         private Dictionary<Renderer, ShadowCastingMode> GenerateShadowCastingMode()
@@ -169,6 +177,26 @@ namespace Starport.Characters
             Destroy(temp);
 
             currentState = null;
+        }
+
+        private void OnOptionsMenuClosed()
+        {
+            if (!HasOpenedOptionsMenu) return;
+
+            if (InputManager != null)
+                InputManager.InputEnabled = true;
+
+            HasOpenedOptionsMenu = false;
+        }
+        public void OpenOptionsMenu()
+        {
+            if (HasOpenedOptionsMenu) return;
+
+            if (InputManager != null)
+                InputManager.InputEnabled = false;
+
+            HasOpenedOptionsMenu = true;
+            UIEvents.ShowOptionsMenu?.Invoke();
         }
     }
 }
