@@ -33,6 +33,13 @@ namespace Starport
             SceneManager.LoadSceneAsync(_preloaderScene, LoadSceneMode.Additive);
         }
 
+        public void StartOffline()
+        {
+            _stateManager.StartOfflineAttempt();
+            _stateManager.SetNextScene(_gameScene);
+            SceneManager.LoadSceneAsync(_preloaderScene, LoadSceneMode.Additive);
+        }
+
         public void JoinHost()
         {
             _stateManager.StartJoinHostAttempt(JoinCode);

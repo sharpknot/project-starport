@@ -45,6 +45,11 @@ namespace Starport
 
                 _relayManager.Disconnect();
             }
+
+            if(NetworkManager.Singleton != null)
+            {
+                NetworkManager.Singleton.Shutdown();
+            }
         }
 
 
@@ -203,6 +208,25 @@ namespace Starport
         private void StartOffline()
         {
             UIEvents.HideSessionStartCover?.Invoke();
+
+            NetworkManager nm = NetworkManager.Singleton;
+            if (nm == null)
+            {
+                Debug.LogError("[GameSessionManager] NetworkManager singleton not found!");
+                UIEvents.ShowDisconnectWindow?.Invoke("NetworkManager singleton not found!");
+                return;
+            }
+
+            // Start host locally (no Relay)
+            if (!nm.StartHost())
+            {
+                Debug.LogError("[GameSessionManager] Failed to start offline host!");
+                UIEvents.ShowDisconnectWindow?.Invoke("Failed to start offline host!");
+                return;
+            }
+
+            // Spawn the host character immediately
+            SpawnHostCharacter();
         }
 
         private void DisconnectAsHost()
