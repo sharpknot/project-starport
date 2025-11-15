@@ -29,7 +29,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.659, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 328076093392510916}
   m_Father: {fileID: 5602880207889552802}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4725516467716493611
@@ -75,6 +76,69 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
+--- !u!1 &4876505919849772383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 328076093392510916}
+  m_Layer: 0
+  m_Name: PickupOriginReference
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &328076093392510916
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4876505919849772383}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 6064729984512135960}
+  m_Father: {fileID: 2618018831683090897}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8173338329864695335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6064729984512135960}
+  m_Layer: 0
+  m_Name: PickupPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6064729984512135960
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8173338329864695335}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: 1.885318e-27, w: 1}
+  m_LocalPosition: {x: -0, y: -0.18, z: 1.021}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 328076093392510916}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &5353606367346143817
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -127,6 +191,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayableCharacter
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
@@ -162,6 +230,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3904866843791728767}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6355940253721953404}
   m_SourcePrefab: {fileID: 100100000, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
 --- !u!137 &686736368702789776 stripped
 SkinnedMeshRenderer:
@@ -196,6 +267,8 @@ MonoBehaviour:
   _defaultLocomotionState: {fileID: 11400000, guid: 27d5f239f1b1e0f499da5f2de0eabedf, type: 2}
   _startLocomotionState: {fileID: 11400000, guid: 27d5f239f1b1e0f499da5f2de0eabedf, type: 2}
   <MotionController>k__BackingField: {fileID: 163621916589111476}
+  <PickupHandler>k__BackingField: {fileID: 6355940253721953404}
+  <HasOpenedOptionsMenu>k__BackingField: 0
 --- !u!54 &220965772352337662
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -249,7 +322,7 @@ MonoBehaviour:
   _sprintMoveSpeed: 7
   _groundLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
 --- !u!143 &2126714077019863828
 CharacterController:
   m_ObjectHideFlags: 0
@@ -376,6 +449,30 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 0
+--- !u!114 &6355940253721953404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5083083424699420440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29c35a0bca3d89b4588df5b5c9d041b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pickupDistance: 3
+  _throwForce: 20
+  _pickupOriginReference: {fileID: 328076093392510916}
+  _pickupHoldReference: {fileID: 6064729984512135960}
+  _pickupLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  _blockingLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  <CurrentPickup>k__BackingField: {fileID: 0}
+  <CurrentPickable>k__BackingField: {fileID: 0}
 --- !u!4 &5602880207889552802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}

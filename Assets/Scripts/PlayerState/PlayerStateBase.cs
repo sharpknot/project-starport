@@ -8,6 +8,7 @@ namespace Starport.PlayerState
         protected PlayerStateManager StateManager { get; private set; }
         protected CharacterMotionController MotionController { get; private set; }
         protected PlayerInputManager InputManager { get; private set; }
+        protected CharacterPickupHandler PickupHandler { get; private set; }
         public virtual void EnterState(PlayerStateManager stateManager)
         {
             StateManager = stateManager;
@@ -15,6 +16,7 @@ namespace Starport.PlayerState
             {
                 MotionController = StateManager.MotionController;
                 InputManager = StateManager.InputManager;
+                PickupHandler = StateManager.PickupHandler;
             }
         }
 

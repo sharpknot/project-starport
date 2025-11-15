@@ -61,6 +61,7 @@ namespace Starport
         public Vector2 LookDeltaInput { get; private set; } = Vector2.zero;
 
         public event UnityAction OnJumpInput, OnOptionsMenuInput;
+        public event UnityAction OnPrimaryInput, OnSecondaryInput;
 
         public Vector3 GetWorldFlatMoveDirection(Camera camera)
         {
@@ -135,6 +136,8 @@ namespace Starport
 
             InputActions.Main.Jump.performed += OnJump;
             InputActions.Main.OptionsMenu.performed += OnOptionsMenu;
+            InputActions.Main.PrimaryAction.performed += OnPrimary;
+            InputActions.Main.SecondaryAction.performed += OnSecondary;
         }
 
         private void ClearInputEvents()
@@ -144,9 +147,13 @@ namespace Starport
 
             InputActions.Main.Jump.performed -= OnJump;
             InputActions.Main.OptionsMenu.performed -= OnOptionsMenu;
+            InputActions.Main.PrimaryAction.performed -= OnPrimary;
+            InputActions.Main.SecondaryAction.performed -= OnSecondary;
         }
 
         private void OnJump(InputAction.CallbackContext ctx) => OnJumpInput?.Invoke();
         private void OnOptionsMenu(InputAction.CallbackContext ctx) => OnOptionsMenuInput?.Invoke();
+        private void OnPrimary(InputAction.CallbackContext ctx) => OnPrimaryInput?.Invoke();
+        private void OnSecondary(InputAction.CallbackContext ctx) => OnSecondaryInput?.Invoke();
     }
 }

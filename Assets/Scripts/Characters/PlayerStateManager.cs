@@ -32,6 +32,8 @@ namespace Starport.Characters
         public PlayerInputManager InputManager { get; private set; }
         [field:SerializeField]
         public CharacterMotionController MotionController { get; private set; }
+        [field: SerializeField]
+        public CharacterPickupHandler PickupHandler { get; private set; }
 
         [field: SerializeField, ReadOnly] 
         public bool HasOpenedOptionsMenu { get; private set; } = false;

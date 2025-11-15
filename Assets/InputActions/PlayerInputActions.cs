@@ -127,6 +127,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PrimaryAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""d92fb6f7-7c1e-4a29-aff0-b8e5b614823b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""45fb2657-a5c5-4f39-a67f-1227469e8c6b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -261,6 +279,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""OptionsMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""86bbb90c-c36c-427e-80ca-7fd139bc4b6f"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardAndMouse"",
+                    ""action"": ""PrimaryAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b2472943-bca8-42d2-809e-a3af9db60797"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardAndMouse"",
+                    ""action"": ""SecondaryAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -301,6 +341,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Main_Movement = m_Main.FindAction("Movement", throwIfNotFound: true);
         m_Main_Jump = m_Main.FindAction("Jump", throwIfNotFound: true);
         m_Main_OptionsMenu = m_Main.FindAction("OptionsMenu", throwIfNotFound: true);
+        m_Main_PrimaryAction = m_Main.FindAction("PrimaryAction", throwIfNotFound: true);
+        m_Main_SecondaryAction = m_Main.FindAction("SecondaryAction", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -385,6 +427,8 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Main_Movement;
     private readonly InputAction m_Main_Jump;
     private readonly InputAction m_Main_OptionsMenu;
+    private readonly InputAction m_Main_PrimaryAction;
+    private readonly InputAction m_Main_SecondaryAction;
     /// <summary>
     /// Provides access to input actions defined in input action map "Main".
     /// </summary>
@@ -412,6 +456,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Main/OptionsMenu".
         /// </summary>
         public InputAction @OptionsMenu => m_Wrapper.m_Main_OptionsMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/PrimaryAction".
+        /// </summary>
+        public InputAction @PrimaryAction => m_Wrapper.m_Main_PrimaryAction;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/SecondaryAction".
+        /// </summary>
+        public InputAction @SecondaryAction => m_Wrapper.m_Main_SecondaryAction;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -450,6 +502,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OptionsMenu.started += instance.OnOptionsMenu;
             @OptionsMenu.performed += instance.OnOptionsMenu;
             @OptionsMenu.canceled += instance.OnOptionsMenu;
+            @PrimaryAction.started += instance.OnPrimaryAction;
+            @PrimaryAction.performed += instance.OnPrimaryAction;
+            @PrimaryAction.canceled += instance.OnPrimaryAction;
+            @SecondaryAction.started += instance.OnSecondaryAction;
+            @SecondaryAction.performed += instance.OnSecondaryAction;
+            @SecondaryAction.canceled += instance.OnSecondaryAction;
         }
 
         /// <summary>
@@ -473,6 +531,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @OptionsMenu.started -= instance.OnOptionsMenu;
             @OptionsMenu.performed -= instance.OnOptionsMenu;
             @OptionsMenu.canceled -= instance.OnOptionsMenu;
+            @PrimaryAction.started -= instance.OnPrimaryAction;
+            @PrimaryAction.performed -= instance.OnPrimaryAction;
+            @PrimaryAction.canceled -= instance.OnPrimaryAction;
+            @SecondaryAction.started -= instance.OnSecondaryAction;
+            @SecondaryAction.performed -= instance.OnSecondaryAction;
+            @SecondaryAction.canceled -= instance.OnSecondaryAction;
         }
 
         /// <summary>
@@ -567,5 +631,19 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOptionsMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "PrimaryAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPrimaryAction(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SecondaryAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSecondaryAction(InputAction.CallbackContext context);
     }
 }
