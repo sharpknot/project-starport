@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Events;
+using NaughtyAttributes;
 
 namespace Starport
 {
@@ -28,6 +29,11 @@ namespace Starport
         public event UnityAction OnOwnershipReset;
         public UnityEvent OnOwnershipResetEvent = new();
 
+        [SerializeField, ReadOnly]
+        private bool _currentHasOwner = false;
+        [SerializeField, ReadOnly]
+        private ulong _currentOwnerId = NetworkManager.ServerClientId;
+
         public bool HasOwner(out ulong currentOwner)
         {
             currentOwner = _currentOwner.Value;
@@ -44,10 +50,16 @@ namespace Starport
             ResetOwnershipServerRpc(NetworkManager.LocalClientId);
         }
 
-        private void Awake()
+        public override void OnNetworkSpawn()
         {
-            if (NetworkManager.Singleton != null)
+            if (IsServer && NetworkManager.Singleton != null)
                 NetworkManager.Singleton.OnClientDisconnectCallback += HandleDisconnect;
+        }
+
+        private void Update()
+        {
+            _currentHasOwner = _hasOwner.Value;
+            _currentOwnerId = _currentOwner.Value;
         }
 
         public override void OnDestroy()
@@ -131,8 +143,12 @@ namespace Starport
         private void ResetOwnershipInternal()
         {
             _hasOwner.Value = false;
+            ulong originalOwner = _currentOwner.Value;
             _currentOwner.Value = NetworkManager.ServerClientId;
             NetworkObject.RemoveOwnership();
+
+            Debug.Log($"[OwnershipController] Original owner ({originalOwner}) disconnected! {gameObject.name} ownership returned to {NetworkObject.OwnerClientId}");
+
             OwnershipResetClientRpc();
         }
     }
