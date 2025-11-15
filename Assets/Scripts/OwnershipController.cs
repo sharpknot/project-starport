@@ -62,21 +62,24 @@ namespace Starport
             _currentOwnerId = _currentOwner.Value;
         }
 
-        public override void OnDestroy()
+        public override void OnNetworkDespawn()
         {
             if (NetworkManager.Singleton != null)
                 NetworkManager.Singleton.OnClientDisconnectCallback -= HandleDisconnect;
-            base.OnDestroy();
         }
 
         private void HandleDisconnect(ulong disconnectedClientId)
         {
             if (!IsServer) return;
-            if (!HasOwner(out ulong currentOwner)) return;
-            if (currentOwner != disconnectedClientId) return;
+
+            ulong ownerId = _currentOwner.Value;
+
+            if (!_hasOwner.Value) return;
+            if (ownerId != disconnectedClientId) return;
 
             ResetOwnershipInternal();
         }
+
 
         [Rpc(SendTo.Server)]
         private void RequestOwnershipServerRpc(ulong requestingClientId)
@@ -106,7 +109,7 @@ namespace Starport
 
             _hasOwner.Value = false;
             _currentOwner.Value = NetworkManager.ServerClientId;
-            NetworkObject.RemoveOwnership();
+            NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
 
             Debug.Log($"[OwnershipController] {gameObject.name} ownership returned to {NetworkObject.OwnerClientId}");
 
@@ -145,7 +148,7 @@ namespace Starport
             _hasOwner.Value = false;
             ulong originalOwner = _currentOwner.Value;
             _currentOwner.Value = NetworkManager.ServerClientId;
-            NetworkObject.RemoveOwnership();
+            NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
 
             Debug.Log($"[OwnershipController] Original owner ({originalOwner}) disconnected! {gameObject.name} ownership returned to {NetworkObject.OwnerClientId}");
 
