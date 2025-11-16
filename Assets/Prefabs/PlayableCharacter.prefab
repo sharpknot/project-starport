@@ -543,6 +543,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _interactDistance: 3
   _interactOriginReference: {fileID: 2618018831683090897}
+  _parentNetworkObject: {fileID: 2774360583928067535}
   _interactLayer:
     serializedVersion: 2
     m_Bits: 256

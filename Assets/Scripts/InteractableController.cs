@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.TextCore.Text;
 
 namespace Starport
 {
@@ -82,6 +83,8 @@ namespace Starport
             // locally prevent multiple attempts while waiting for a response
             _hasInteractAttempt = true;
 
+            Debug.Log($"[InteractableController] {gameObject.name} interact attempt start by client {character.OwnerClientId}");
+
             // pass the character's NetworkObject as a reference; server will validate ownership
             RequestInteractServerRpc(new NetworkObjectReference(character.NetworkObject), character.OwnerClientId);
         }
@@ -91,9 +94,12 @@ namespace Starport
         [Rpc(SendTo.Server)]
         private void RequestInteractServerRpc(NetworkObjectReference characterRef, ulong senderClientId)
         {
+            Debug.Log($"[InteractableController] Server side {gameObject.name}, received interact request from {senderClientId} ");
+
             // simple server-side spam prevention: if same client already has pending request, reject
             if (_pendingRequests.Contains(senderClientId))
             {
+                Debug.LogWarning($"[InteractableController] Server side {gameObject.name}, client {senderClientId} already has pending request!");
                 // send failure back to the single requester
                 ResultInteractClientRpc(false, new ClientRpcParams
                 {
@@ -107,6 +113,7 @@ namespace Starport
             // Resolve the character reference
             if (!characterRef.TryGet(out NetworkObject charNetObj))
             {
+                Debug.LogWarning($"[InteractableController] Server side {gameObject.name}, client {senderClientId} is missing networkObject!");
                 SendResultAndClearPending(senderClientId, false);
                 return;
             }
@@ -114,6 +121,7 @@ namespace Starport
             // Validate the character belongs to the sender (prevent spoofing)
             if (charNetObj.OwnerClientId != senderClientId)
             {
+                Debug.LogWarning($"[InteractableController] Server side {gameObject.name}, client {senderClientId} spoofed!");
                 SendResultAndClearPending(senderClientId, false);
                 return;
             }
@@ -122,6 +130,7 @@ namespace Starport
             CharacterNetworkManager cm = charNetObj.GetComponent<CharacterNetworkManager>();
             if (cm == null)
             {
+                Debug.LogWarning($"[InteractableController] Server side {gameObject.name}, client {senderClientId} missing CharacterNetworkManager!");
                 SendResultAndClearPending(senderClientId, false);
                 return;
             }
@@ -139,6 +148,7 @@ namespace Starport
         // helper to reply to single client and clear pending flag
         private void SendResultAndClearPending(ulong targetClientId, bool success)
         {
+            Debug.Log($"[InteractableController] Server side {gameObject.name}, sending {success} result to {targetClientId}");
             // send targeted ClientRpc
             ResultInteractClientRpc(success, new ClientRpcParams
             {
@@ -157,6 +167,8 @@ namespace Starport
             // run on the client that requested interaction
             _hasInteractAttempt = false;
             OnInteractAttemptResultClient?.Invoke(success);
+
+            Debug.Log($"[InteractableController] {gameObject.name} interact attempt: {success}");
         }
 
         // Optional: tidy up pending requests when server despawns this object

@@ -38,6 +38,7 @@ namespace Starport.PlayerState
             InputManager.OnOptionsMenuInput += OpenOptionsMenu;
             InputManager.OnPrimaryInput += PrimaryAction;
             InputManager.OnSecondaryInput += SecondaryAction;
+            InputManager.OnInteractInput += InteractAction;
         }
 
         private void UnsubscribeInputEvents()
@@ -46,6 +47,7 @@ namespace Starport.PlayerState
             InputManager.OnOptionsMenuInput -= OpenOptionsMenu;
             InputManager.OnPrimaryInput -= PrimaryAction;
             InputManager.OnSecondaryInput -= SecondaryAction;
+            InputManager.OnInteractInput -= InteractAction;
         }
 
         private void OpenOptionsMenu()
@@ -83,6 +85,17 @@ namespace Starport.PlayerState
                     InteractableController.SetAllowInteract(true);
             }
                 
+        }
+
+        private void InteractAction()
+        {
+            if (InteractableController == null)
+                return;
+
+            if (InteractableController.CurrentInteractable == null)
+                return;
+
+            InteractableController.AttemptInteract(CharacterNetworkManager);
         }
     }
 }

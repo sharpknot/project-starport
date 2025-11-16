@@ -10,7 +10,7 @@ namespace Starport
         [SerializeField] private RectTransform _parentPanel;
 
         private InteractableController _currentInteractable;
-        private static readonly string _prefix = "[E] ";
+        private static readonly string _prefix = "[F] ";
 
 
         private void Awake()
