@@ -4,11 +4,12 @@ using Starport.Characters;
 namespace Starport.PlayerState
 {
     [CreateAssetMenu(fileName = "PSLocoJump", menuName = "Player State/Locomotion/Jumping")]
-    public class PSLocoJump : PlayerStateBase
+    public class PSLocoJump : PSLoco
     {
         [SerializeField] private float _minJumpDuration = 0.25f;
         [SerializeField] private float _jumpHeight = 2f;
         [SerializeField] private PlayerStateBase _fallingState;
+        [SerializeField] private int _layer;
 
         private float _currentJumpDuration = 0f;
         private Vector3 _currentLateralVelocity = Vector3.zero;
@@ -26,6 +27,11 @@ namespace Starport.PlayerState
 
             if(MotionController != null)
                 MotionController.Jump(jumpSpeed);
+
+            if(AnimatorController != null)
+            {
+                AnimatorController.SetLayerWeight(_layer, 1f, 0.1f);
+            }
         }
 
         public override void UpdateState(float deltaTime)
@@ -51,6 +57,13 @@ namespace Starport.PlayerState
             UpdateMotion(deltaTime);
         }
 
+        public override void ExitState()
+        {
+            if (AnimatorController != null)
+                AnimatorController.SetLayerWeight(_layer, 0f, 0.1f);
+
+            base.ExitState();
+        }
 
         private void OnValidate()
         {

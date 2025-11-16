@@ -10,8 +10,6 @@ namespace Starport.UI
         [SerializeField] private RectTransform _parentPanel;
         [SerializeField] private UISpinner _spinner;
 
-        private bool _isJoining = false;
-
         private void Awake()
         {
             UIEvents.ShowSessionStartCover += Show;

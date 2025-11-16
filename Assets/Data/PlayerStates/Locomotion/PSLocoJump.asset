@@ -15,3 +15,4 @@ MonoBehaviour:
   _minJumpDuration: 0.25
   _jumpHeight: 2
   _fallingState: {fileID: 11400000, guid: 13a3bb16e9c2b06488e71f879f43bfeb, type: 2}
+  _layer: 1

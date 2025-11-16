@@ -35,6 +35,9 @@ namespace Starport.Characters
         [field: SerializeField]
         public CharacterPickupHandler PickupHandler { get; private set; }
 
+        [field: SerializeField]
+        public CharacterAnimatorController AnimatorController { get; private set; }
+
         [field: SerializeField, ReadOnly] 
         public bool HasOpenedOptionsMenu { get; private set; } = false;
 

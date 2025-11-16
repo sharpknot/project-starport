@@ -4,8 +4,10 @@ using Starport.Characters;
 namespace Starport.PlayerState
 {
     [CreateAssetMenu(fileName = "PSLocoFalling", menuName = "Player State/Locomotion/Falling")]
-    public class PSLocoFalling : PlayerStateBase
+    public class PSLocoFalling : PSLoco
     {
+        [SerializeField] private int _layer;
+
         private Vector3 _currentLateralVelocity = Vector3.zero;
 
         public override void EnterState(PlayerStateManager stateManager)
@@ -16,6 +18,11 @@ namespace Starport.PlayerState
             {
                 Vector3 prevVel = MotionController.PreviousVelocity;
                 _currentLateralVelocity = new(prevVel.x, 0f, prevVel.z);
+            }
+
+            if (AnimatorController != null)
+            {
+                AnimatorController.SetLayerWeight(_layer, 1f, 0.1f);
             }
         }
 
@@ -30,6 +37,14 @@ namespace Starport.PlayerState
             }
 
             UpdateMotion(deltaTime);
+        }
+
+        public override void ExitState()
+        {
+            if (AnimatorController != null)
+                AnimatorController.SetLayerWeight(_layer, 0f, 0.1f);
+
+            base.ExitState();
         }
 
 

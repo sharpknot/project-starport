@@ -5,10 +5,12 @@ using NaughtyAttributes;
 namespace Starport.PlayerState
 {
     [CreateAssetMenu(fileName = "PSLocoGroundMove", menuName = "Player State/Locomotion/Move on Ground")]
-    public class PSLocoGroundMove : PlayerStateBase
+    public class PSLocoGroundMove : PSLoco
     {
         [SerializeField, BoxGroup("Falling")] private PlayerStateBase _fallingLocomotionState, _jumpLocomotionState;
         [SerializeField, BoxGroup("Falling")] private float _maxCoyoteDuration = 0.5f;
+        [SerializeField] private int _layer;
+
         private float _currentCoyoteDuration = 0f;
 
         public override void EnterState(PlayerStateManager stateManager)
@@ -16,6 +18,11 @@ namespace Starport.PlayerState
             base.EnterState(stateManager);
 
             AddInputEvents();
+
+            if (AnimatorController != null)
+            {
+                AnimatorController.SetLayerWeight(_layer, 1f, 0.1f);
+            }
         }
 
         public override void UpdateState(float deltaTime)
@@ -35,6 +42,10 @@ namespace Starport.PlayerState
         public override void ExitState()
         {
             ClearInputEvents();
+
+            if (AnimatorController != null)
+                AnimatorController.SetLayerWeight(_layer, 0f, 0.1f);
+
             base.ExitState();
         }
 

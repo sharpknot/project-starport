@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b4c295226e907342830d377d51c1686, type: 3}
   m_Name: PSLocoFalling
   m_EditorClassIdentifier: 
+  _layer: 2

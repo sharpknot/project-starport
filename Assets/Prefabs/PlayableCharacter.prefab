@@ -196,6 +196,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2bea5a6bd7369e34c8afb53f20181b81, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
@@ -233,10 +237,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6355940253721953404}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2358106748748125205}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5959111739827780077}
   m_SourcePrefab: {fileID: 100100000, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
 --- !u!137 &686736368702789776 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 4885301371922852569, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+  m_PrefabInstance: {fileID: 5353606367346143817}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1954915222769569752 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
   m_PrefabInstance: {fileID: 5353606367346143817}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &5083083424699420440 stripped
@@ -268,6 +283,7 @@ MonoBehaviour:
   _startLocomotionState: {fileID: 11400000, guid: 27d5f239f1b1e0f499da5f2de0eabedf, type: 2}
   <MotionController>k__BackingField: {fileID: 163621916589111476}
   <PickupHandler>k__BackingField: {fileID: 6355940253721953404}
+  <AnimatorController>k__BackingField: {fileID: 5959111739827780077}
   <HasOpenedOptionsMenu>k__BackingField: 0
 --- !u!54 &220965772352337662
 Rigidbody:
@@ -473,6 +489,41 @@ MonoBehaviour:
     m_Bits: 1
   <CurrentPickup>k__BackingField: {fileID: 0}
   <CurrentPickable>k__BackingField: {fileID: 0}
+--- !u!114 &2358106748748125205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5083083424699420440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 1954915222769569752}
+--- !u!114 &5959111739827780077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5083083424699420440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31d6c8b31d2acdd49ab6eed43fb66625, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  _animator: {fileID: 1954915222769569752}
+  _characterController: {fileID: 2126714077019863828}
+  _networkAnimator: {fileID: 0}
+  _forwardVelocity: forwardVelocity
+  _rightVelocity: rightVelocity
+  _baseResetTriggerParam: resetBase
+  _locomotionResetTriggerParam: resetLocomotion
 --- !u!4 &5602880207889552802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
