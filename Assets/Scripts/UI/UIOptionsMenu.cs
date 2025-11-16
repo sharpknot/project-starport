@@ -52,6 +52,8 @@ namespace Starport.UI
             OpenedSubMenu = false;
             _initialized = true;
 
+            Cursor.visible = true;
+
             UpdateJoinCode();
         }
 

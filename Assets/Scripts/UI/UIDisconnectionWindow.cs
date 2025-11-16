@@ -44,6 +44,7 @@ namespace Starport.UI
             UIUtility.ShowPanel(_parentPanel, true);
             UIUtility.SetText(_text, message);
             _initialized = true;
+            Cursor.visible = true;
         }
 
         public void GoToStartMenu()

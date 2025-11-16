@@ -34,6 +34,11 @@ namespace Starport
         }
         private Rigidbody _rigidBody;
 
+        [field: SerializeField]
+        public string PickupName { get; set; }
+        [field: SerializeField]
+        public string PickupDescription { get; set; }
+
         public bool IsPickedUp(out ulong pickerClientId) => OwnershipController.HasOwner(out pickerClientId);
 
         public void AttemptPickup()

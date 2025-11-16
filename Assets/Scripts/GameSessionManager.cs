@@ -64,6 +64,7 @@ namespace Starport
 
             _stateManager.OnSceneFinishLoaded?.Invoke();
 
+            UIEvents.ShowHUD?.Invoke(false);
             UIEvents.ShowSessionStartCover?.Invoke("");
 
             if (_stateManager.IsAttemptingToJoinHost(out string targetJoinCode))

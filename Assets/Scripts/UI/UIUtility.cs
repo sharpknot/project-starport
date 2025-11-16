@@ -8,7 +8,8 @@ namespace Starport
         public static void ShowPanel(RectTransform panel, bool show)
         {
             if (panel == null) return;
-            panel.gameObject.SetActive(show);
+            if(panel.gameObject.activeSelf != show)
+                panel.gameObject.SetActive(show);
         }
 
         public static void SetText(TMP_Text textBox, string text)

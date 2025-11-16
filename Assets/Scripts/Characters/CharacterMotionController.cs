@@ -77,6 +77,8 @@ namespace Starport.Characters
         [SerializeField, BoxGroup("Ground Parameters")]
         private LayerMask _groundLayer;
 
+        public bool CharacterControllerGrounded => CharacterController.isGrounded;
+
         public void InitializeMotionController()
         {
             Rigidbody.interpolation = RigidbodyInterpolation.None;
@@ -118,7 +120,6 @@ namespace Starport.Characters
             UpdateGrounded();
             UpdateMotion();
 
-
             _currentSpeed = CharacterController.velocity.magnitude;
             _inputLateralMotion = Vector3.zero;
             _jumpSpeed = 0f;
@@ -151,11 +152,14 @@ namespace Starport.Characters
             Vector3 surfaceInputMotion = GetSurfaceInputMotion(deltaTime);
 
             float netDownMotion = 0f;
-            if (!CharacterController.isGrounded || !_isGrounded || _previousVerticalVelocity > 0f)
+            if(!CharacterController.isGrounded)
             {
-                netDownMotion = _previousVerticalVelocity * deltaTime;
-                float gravVelocity = Physics.gravity.y * deltaTime;
-                netDownMotion += (gravVelocity * deltaTime);
+                if (!_isGrounded || _previousVerticalVelocity > 0f)
+                {
+                    netDownMotion = _previousVerticalVelocity * deltaTime;
+                    float gravVelocity = Physics.gravity.y * deltaTime;
+                    netDownMotion += (gravVelocity * deltaTime);
+                }
             }
 
             if(_jumpSpeed > 0f)

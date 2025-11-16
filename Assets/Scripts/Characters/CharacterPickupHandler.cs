@@ -2,6 +2,7 @@ using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Starport.Characters
 {
@@ -19,8 +20,8 @@ namespace Starport.Characters
         public PickupController CurrentPickable { get; private set; } = null;
         private PickupController _previousPickable = null;
 
-        public event UnityAction<PickupController> OnCurrentPickableUpdate, OnCurrentPickupUpdate;
-        public event UnityAction<PickupController> OnPickupAttemptResult;
+        public static event UnityAction<PickupController> OnCurrentPickableUpdate, OnCurrentPickupUpdate;
+        public static event UnityAction<PickupController> OnPickupAttemptResult;
 
         private PickupController _pickupToAttempt = null;
         private bool _hasCurrentPickup = false;

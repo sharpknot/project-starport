@@ -23,6 +23,7 @@ namespace Starport
             _stateManager.StopJoinHostAttempt();
             _stateManager.StopOfflineAttempt();
 
+            Cursor.visible = true;
             _stateManager.OnSceneFinishLoaded?.Invoke();
         }
 

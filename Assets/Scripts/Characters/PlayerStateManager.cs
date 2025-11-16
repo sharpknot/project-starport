@@ -63,6 +63,7 @@ namespace Starport.Characters
             if(MotionController != null) 
                 MotionController.InitializeMotionController();
 
+            UIEvents.ShowHUD?.Invoke(true);
             _initialized = true;
         }
 
@@ -189,6 +190,7 @@ namespace Starport.Characters
                 InputManager.InputEnabled = true;
 
             HasOpenedOptionsMenu = false;
+            UIEvents.ShowHUD?.Invoke(true);
         }
         public void OpenOptionsMenu()
         {
@@ -198,6 +200,7 @@ namespace Starport.Characters
                 InputManager.InputEnabled = false;
 
             HasOpenedOptionsMenu = true;
+            UIEvents.ShowHUD?.Invoke(false);
             UIEvents.ShowOptionsMenu?.Invoke();
         }
     }

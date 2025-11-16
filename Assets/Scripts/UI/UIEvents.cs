@@ -12,6 +12,8 @@ namespace Starport.UI
         public static UnityAction HiddenOptionsMenu;
 
         public static UnityAction<string> ShowDisconnectWindow;
+
+        public static UnityAction<bool> ShowHUD;
     }
 
     

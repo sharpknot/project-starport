@@ -55,7 +55,7 @@ namespace Starport.PlayerState
         private bool HasGrounded()
         {
             if(MotionController == null) return false;
-            return MotionController.IsGrounded(out _);
+            return (MotionController.IsGrounded(out _) || MotionController.CharacterControllerGrounded);
         }
 
         private void OnValidate()
