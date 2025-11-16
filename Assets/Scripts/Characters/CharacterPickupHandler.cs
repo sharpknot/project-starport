@@ -2,7 +2,6 @@ using DG.Tweening;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem.LowLevel;
 
 namespace Starport.Characters
 {
@@ -27,6 +26,7 @@ namespace Starport.Characters
         private bool _hasCurrentPickup = false;
         private Sequence _pickupAttempt = null;
         private static readonly float _pickupAttemptDuration = 2f;
+        private bool _allowPickup = true;
 
         private void Update()
         {
@@ -98,8 +98,8 @@ namespace Starport.Characters
 
         private void UpdateCurrentPickable()
         {
-            // Is currently picking up || unable to calculate without origin reference || distance too small
-            if(CurrentPickup != null || _pickupOriginReference == null || _pickupDistance <= 0f)
+            // Is currently picking up || unable to calculate without origin reference || distance too small || allowed to pickup
+            if(CurrentPickup != null || _pickupOriginReference == null || _pickupDistance <= 0f || !_allowPickup)
             {
                 SetCurrentPickable(null);
                 return;
@@ -155,6 +155,18 @@ namespace Starport.Characters
             }
 
             SetCurrentPickable(currentPickable);
+        }
+
+        public void SetAllowPickup(bool allow)
+        {
+            if (allow == _allowPickup) return;
+
+            _allowPickup = allow;
+            if (_allowPickup) return;
+            if (CurrentPickup == null) return;
+
+            // If currently holding pickup
+            DropCurrentPickup();
         }
 
         private void SetCurrentPickable(PickupController currentPickable)

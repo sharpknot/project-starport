@@ -243,6 +243,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5959111739827780077}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2362737962959119076}
   m_SourcePrefab: {fileID: 100100000, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
 --- !u!137 &686736368702789776 stripped
 SkinnedMeshRenderer:
@@ -284,6 +287,8 @@ MonoBehaviour:
   <MotionController>k__BackingField: {fileID: 163621916589111476}
   <PickupHandler>k__BackingField: {fileID: 6355940253721953404}
   <AnimatorController>k__BackingField: {fileID: 5959111739827780077}
+  <CharacterNetworkManager>k__BackingField: {fileID: 1710869825445813175}
+  <InteractableController>k__BackingField: {fileID: 2362737962959119076}
   <HasOpenedOptionsMenu>k__BackingField: 0
 --- !u!54 &220965772352337662
 Rigidbody:
@@ -363,7 +368,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 1.02, z: 0}
 --- !u!114 &2774360583928067535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,6 +529,27 @@ MonoBehaviour:
   _rightVelocity: rightVelocity
   _baseResetTriggerParam: resetBase
   _locomotionResetTriggerParam: resetLocomotion
+--- !u!114 &2362737962959119076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5083083424699420440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90f54d36295dcd844bdbfb0b6adfd327, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _interactDistance: 3
+  _interactOriginReference: {fileID: 2618018831683090897}
+  _interactLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  _blockingLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  <CurrentInteractable>k__BackingField: {fileID: 0}
 --- !u!4 &5602880207889552802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
