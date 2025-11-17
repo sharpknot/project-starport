@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Unity.Netcode.Components;
 
-namespace Starport
+namespace Starport.Dispenser
 {
     [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
     public class DispenserController : NetworkBehaviour

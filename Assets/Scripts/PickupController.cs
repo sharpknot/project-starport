@@ -39,11 +39,26 @@ namespace Starport
         [field: SerializeField]
         public string PickupDescription { get; set; }
 
+        private NetworkVariable<bool> _canPickup = new(
+            true, 
+            NetworkVariableReadPermission.Everyone, 
+            NetworkVariableWritePermission.Server
+            );
+
         public bool IsPickedUp(out ulong pickerClientId) => OwnershipController.HasOwner(out pickerClientId);
+
+        public void SetAllowPickup(bool allow)
+        {
+            if (!IsServer) return;
+            if (_canPickup.Value == allow) return;
+            _canPickup.Value = allow;
+        }
+
+        public bool PickupAllowed() => _canPickup.Value;
 
         public void AttemptPickup()
         {
-            if (_isAttemptingPickup || IsPickedUp(out _))
+            if (_isAttemptingPickup || IsPickedUp(out _) || !PickupAllowed())
             {
                 OnPickupAttemptResult?.Invoke(false);
                 return;

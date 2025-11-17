@@ -128,6 +128,7 @@ namespace Starport.Characters
                 if(p == null) continue;
 
                 if (p.IsPickedUp(out _)) continue;
+                if (!p.PickupAllowed()) continue;
                 
                 if(currentPickable == null || hit.distance < closestDistance)
                 {

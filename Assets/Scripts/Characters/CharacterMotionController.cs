@@ -233,7 +233,7 @@ namespace Starport.Characters
             float downCenterDistance = lowestPoint - CharacterController.radius;
 
             RaycastHit[] hits = new RaycastHit[256];
-            int hitCount = Physics.SphereCastNonAlloc(startPos, CharacterController.radius, Vector3.down, hits, downCenterDistance, _groundLayer, QueryTriggerInteraction.UseGlobal);
+            int hitCount = Physics.SphereCastNonAlloc(startPos, CharacterController.radius, Vector3.down, hits, downCenterDistance, _groundLayer, QueryTriggerInteraction.Ignore);
 
             //DebugExtension.DebugCapsule(startPos, startPos+ (Vector3.down * lowestPoint), Color.yellow, CharacterController.radius);
 
