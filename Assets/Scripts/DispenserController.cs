@@ -19,22 +19,27 @@ namespace Starport
         public event UnityAction OnDispenseFailHasBlockage, OnDispenseFailReachedLimit;
         public event UnityAction<PickupController> OnDispenseSuccess;
 
-        [SerializeField, Range(1, 200)] private int _spawnableLimit = 100;
+        [field: SerializeField, Range(1, 200)] 
+        public int SpawnableLimit { get; private set; } = 100;
         private List<PickupController> _spawned;
 
         [SerializeField] private string _interactDescription = "Dispense item";
+
+        private readonly NetworkVariable<int> _currentSpawnedCount = new(
+            0,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+        );
+
+        public int CurrentSpawnedCount => _currentSpawnedCount.Value;
 
         public override void OnNetworkSpawn()
         {
             if (IsServer && _interactable != null)
             {
-                if (!_interactable.IsSpawned)
-                    _interactable.NetworkObject.Spawn();
-
                 _interactable.SetDescription(_interactDescription);
                 _interactable.OnInteractAttemptResultServer += Dispense;
             }
-                
 
             base.OnNetworkSpawn();
         }
@@ -64,10 +69,12 @@ namespace Starport
             }
 
             _spawned ??= new();
-            if(_spawned.Count >= _spawnableLimit)
+            _spawned.RemoveAll(s => s == null || !s.IsSpawned);
+
+            _currentSpawnedCount.Value = _spawned.Count;
+            if (_spawned.Count >= SpawnableLimit)
             {
-                Debug.LogError($"[DispenserController] {gameObject.name} has reached spawn limit");
-                OnDispenseFailReachedLimit?.Invoke();
+                FailedDispenseReachedLimitClientRpc();
                 return;
             }
 
@@ -77,8 +84,7 @@ namespace Starport
                 if(p == null) continue;
                 if (p.GetComponent<PickupController>() == null) continue;
 
-                Debug.LogError($"[DispenserController] {gameObject.name} has a blocking object {p.name}");
-                OnDispenseFailHasBlockage?.Invoke();
+                FailedDispenseHasBlockageClientRpc();
                 return;
             }
 
@@ -87,8 +93,25 @@ namespace Starport
             pc.NetworkObject.Spawn(false);
 
             _spawned.Add(pc);
+            _currentSpawnedCount.Value = _spawned.Count;
             Debug.Log($"[DispenserController] {gameObject.name} spawned {g.name}!");
             OnDispenseSuccess?.Invoke(pc);
         }
+
+        [ClientRpc]
+        private void FailedDispenseReachedLimitClientRpc()
+        {
+            OnDispenseFailReachedLimit?.Invoke();
+            Debug.LogError($"[DispenserController] {gameObject.name} has reached spawn limit");
+        }
+
+        [ClientRpc]
+        private void FailedDispenseHasBlockageClientRpc()
+        {
+            Debug.LogError($"[DispenserController] {gameObject.name} has a blocking object!");
+            OnDispenseFailHasBlockage?.Invoke();
+        }
+
+
     }
 }
