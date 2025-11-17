@@ -15,6 +15,8 @@ namespace Starport.PlayerState
                 PickupHandler.SetAllowPickup(true);
             if (InteractableController != null)
                 InteractableController.SetAllowInteract(true);
+
+            CharacterPickupHandler.OnCurrentPickupUpdate += CurrentPickupUpdate;
         }
 
         public override void UpdateState(float deltaTime)
@@ -26,6 +28,9 @@ namespace Starport.PlayerState
         public override void ExitState()
         {
             UnsubscribeInputEvents();
+
+            CharacterPickupHandler.OnCurrentPickupUpdate -= CurrentPickupUpdate;
+
             base.ExitState();
         }
 
@@ -63,8 +68,6 @@ namespace Starport.PlayerState
             if(PickupHandler.CurrentPickup != null)
             {
                 PickupHandler.ThrowCurrentPickup();
-                if (InteractableController != null)
-                    InteractableController.SetAllowInteract(true);
             } 
         }
 
@@ -75,14 +78,10 @@ namespace Starport.PlayerState
             if (PickupHandler.CurrentPickup == null)
             {
                 PickupHandler.AttemptPickup();
-                if (InteractableController != null)
-                    InteractableController.SetAllowInteract(false);
             }  
             else
             {
                 PickupHandler.DropCurrentPickup();
-                if (InteractableController != null)
-                    InteractableController.SetAllowInteract(true);
             }
                 
         }
@@ -96,6 +95,14 @@ namespace Starport.PlayerState
                 return;
 
             InteractableController.AttemptInteract(CharacterNetworkManager);
+        }
+
+        private void CurrentPickupUpdate(PickupController currentPickup)
+        {
+            if (InteractableController != null)
+            {
+                InteractableController.SetAllowInteract(currentPickup == null);
+            }
         }
     }
 }
