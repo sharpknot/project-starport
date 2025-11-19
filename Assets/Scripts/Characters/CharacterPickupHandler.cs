@@ -189,6 +189,8 @@ namespace Starport.Characters
             if (currentPickup == CurrentPickup)
                 return;
             CurrentPickup = currentPickup;
+            if(CurrentPickup != null)
+                CurrentPickup.Rigidbody.isKinematic = false;
             OnCurrentPickupUpdate?.Invoke(CurrentPickup);
 
             string pickupName = "Null pickup";

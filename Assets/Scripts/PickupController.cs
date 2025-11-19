@@ -87,6 +87,16 @@ namespace Starport
             ThrowServerRpc(force);
         }
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+        }
+
         public override void OnDestroy()
         {
             UnsubscribeOwnershipEvents();
