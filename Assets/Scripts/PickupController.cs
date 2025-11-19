@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace Starport
 {
-    [RequireComponent(typeof(NetworkRigidbody), typeof(OwnershipController))]
+    [RequireComponent(typeof(NetworkRigidbody), typeof(OwnershipController), typeof(DescriptionController))]
     public class PickupController : NetworkBehaviour
     {
         protected OwnershipController OwnershipController
@@ -18,6 +18,17 @@ namespace Starport
             }
         }
         private OwnershipController _ownershipController;
+
+        protected DescriptionController Description
+        {
+            get
+            {
+                if(_description == null)
+                    _description = GetComponent<DescriptionController>();
+                return _description;
+            }
+        }
+        private DescriptionController _description;
 
         private bool _isAttemptingPickup = false;
 
@@ -33,11 +44,6 @@ namespace Starport
             }
         }
         private Rigidbody _rigidBody;
-
-        [field: SerializeField]
-        public string PickupName { get; set; }
-        [field: SerializeField]
-        public string PickupDescription { get; set; }
 
         private NetworkVariable<bool> _canPickup = new(
             true, 
@@ -70,11 +76,13 @@ namespace Starport
 
         public void ReleasePickup()
         {
+            Description.ShowDescription = true;
             OwnershipController.ResetOwnership();
         }
 
         public void ThrowPickup(Vector3 force)
         {
+            Description.ShowDescription = true;
             OwnershipController.ResetOwnership();
             ThrowServerRpc(force);
         }
@@ -109,6 +117,9 @@ namespace Starport
         {
             _isAttemptingPickup = false;
             UnsubscribeOwnershipEvents();
+
+            Description.ShowDescription = false;
+
             OnPickupAttemptResult?.Invoke(true);
         }
 
@@ -116,6 +127,9 @@ namespace Starport
         {
             _isAttemptingPickup = false;
             UnsubscribeOwnershipEvents();
+
+            Description.ShowDescription = true;
+
             OnPickupAttemptResult?.Invoke(false);
         }
 

@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 2058524892836477389}
   - component: {fileID: 3168449869499654523}
   - component: {fileID: 1649490111453488836}
+  - component: {fileID: 2475987831701854640}
   m_Layer: 7
   m_Name: DefaultPickable
   m_TagString: Untagged
@@ -224,7 +225,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   <PickupName>k__BackingField: Default Pickable
-  <PickupDescription>k__BackingField: Description of pickable
+  <PickupDescription>k__BackingField: Description of pickable. Probably should be
+    longer than this. But I don't know.
+--- !u!114 &2475987831701854640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918266351086779558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 687b897c70d605546adc9ed6b20f55eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Title>k__BackingField: Default pickable
+  <Description>k__BackingField: Description of pickable. Probably should be longer
+    than this. But I don't know.
+  <ShowDescription>k__BackingField: 1
 --- !u!1 &3954512062897791834
 GameObject:
   m_ObjectHideFlags: 0

@@ -246,6 +246,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2362737962959119076}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5129560368088796731}
   m_SourcePrefab: {fileID: 100100000, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
 --- !u!137 &686736368702789776 stripped
 SkinnedMeshRenderer:
@@ -551,6 +554,30 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   <CurrentInteractable>k__BackingField: {fileID: 0}
+--- !u!114 &5129560368088796731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5083083424699420440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e6d3b009ef310e4abb9b8388642b54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _detectionDistance: 3
+  _originReference: {fileID: 2618018831683090897}
+  _parentNetworkObject: {fileID: 2774360583928067535}
+  _detectionLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _blockingLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _nonDetectables:
+  - {fileID: 5602880207889552802}
+  <CurrentDescriptionController>k__BackingField: {fileID: 0}
 --- !u!4 &5602880207889552802 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 43587caabb403dc47b6e2048f638a49f, type: 3}
