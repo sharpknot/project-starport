@@ -1,5 +1,6 @@
 using DG.Tweening;
 using NaughtyAttributes;
+using Starport.Pickups;
 using UnityEngine;
 using UnityEngine.Events;
 

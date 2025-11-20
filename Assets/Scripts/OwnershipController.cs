@@ -5,7 +5,7 @@ using NaughtyAttributes;
 
 namespace Starport
 {
-    public class OwnershipController : NetworkBehaviour
+    public class OwnershipController : NaughtyNetworkBehaviour
     {
         private NetworkVariable<bool> _hasOwner = new NetworkVariable<bool>(
             false,

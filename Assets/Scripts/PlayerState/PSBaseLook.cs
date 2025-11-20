@@ -1,5 +1,6 @@
 using UnityEngine;
 using Starport.Characters;
+using Starport.Pickups;
 
 namespace Starport.PlayerState
 {
@@ -15,6 +16,7 @@ namespace Starport.PlayerState
                 PickupHandler.SetAllowPickup(true);
             if (InteractableController != null)
                 InteractableController.SetAllowInteract(true);
+            StateManager.EnableAndUseCamera();
 
             CharacterPickupHandler.OnCurrentPickupUpdate += CurrentPickupUpdate;
         }

@@ -5,11 +5,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using Starport.Pickups;
 
 namespace Starport
 {
     [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
-    public class SocketBaseController : NetworkBehaviour
+    public class SocketBaseController : NaughtyNetworkBehaviour
     {
         [SerializeField, Required] private TriggerHelper _socketArea;
         [field: SerializeField] public PickupController DefaultPickup { get; private set; }

@@ -3,10 +3,11 @@ using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Starport
+namespace Starport.Pickups
 {
-    [RequireComponent(typeof(NetworkRigidbody), typeof(OwnershipController), typeof(DescriptionController))]
-    public class PickupController : NetworkBehaviour
+    [RequireComponent (typeof(NetworkRigidbody), typeof(OwnershipController), typeof(DescriptionController))]
+    [RequireComponent (typeof(NetworkObject))]
+    public class PickupController : NaughtyNetworkBehaviour
     {
         protected OwnershipController OwnershipController
         {
@@ -85,16 +86,6 @@ namespace Starport
             Description.ShowDescription = true;
             OwnershipController.ResetOwnership();
             ThrowServerRpc(force);
-        }
-
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-        }
-
-        public override void OnNetworkDespawn()
-        {
-            base.OnNetworkDespawn();
         }
 
         public override void OnDestroy()

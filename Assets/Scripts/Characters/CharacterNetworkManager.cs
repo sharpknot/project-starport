@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Starport.Characters
 {
     [RequireComponent(typeof(NetworkObject), typeof(PlayerStateManager))]
-    public class CharacterNetworkManager : NetworkBehaviour
+    public class CharacterNetworkManager : NaughtyNetworkBehaviour
     {
         public PlayerStateManager StateManager
         {

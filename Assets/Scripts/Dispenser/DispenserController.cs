@@ -6,11 +6,12 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 using Unity.Netcode.Components;
+using Starport.Pickups;
 
 namespace Starport.Dispenser
 {
     [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
-    public class DispenserController : NetworkBehaviour
+    public class DispenserController : NaughtyNetworkBehaviour
     {
         [SerializeField, Required] private InteractableController _interactable;
         [SerializeField, Required] private TriggerHelper _spawnVolume;

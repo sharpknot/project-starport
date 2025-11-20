@@ -9,7 +9,7 @@ using UnityEngine.TextCore.Text;
 namespace Starport
 {
     [RequireComponent(typeof(Collider))]
-    public class InteractableController : NetworkBehaviour
+    public class InteractableController : NaughtyNetworkBehaviour
     {
         private readonly NetworkVariable<bool> _allowInteract = new(
             true,

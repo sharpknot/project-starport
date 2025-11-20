@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
 using System.Collections;
+using Starport.Pickups;
 
 namespace Starport.Disposer
 {
