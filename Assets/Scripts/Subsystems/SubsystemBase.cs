@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Starport
+namespace Starport.Subsystems
 {
     [RequireComponent (typeof (NetworkObject))]
     public class SubsystemBase : NaughtyNetworkBehaviour
@@ -18,6 +18,7 @@ namespace Starport
 
         [field: SerializeField, ReadOnly]
         public bool IsCurrentlyActive { get; private set;  } = false;
+        public bool IsCurrentlyLocallyActive => IsLocallyActive.Value;
         public event UnityAction<bool> OnCurrentlyActiveUpdate;
 
         public override void OnNetworkSpawn()

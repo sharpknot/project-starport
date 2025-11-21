@@ -4,7 +4,7 @@ using Starport.Sockets;
 using TMPro;
 using UnityEngine;
 
-namespace Starport
+namespace Starport.Display
 {
     public class FluidSocketDisplayController : MonoBehaviour
     {

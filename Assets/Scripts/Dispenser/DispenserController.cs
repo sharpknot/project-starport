@@ -36,13 +36,13 @@ namespace Starport.Dispenser
 
         public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+
             if (IsServer && _interactable != null)
             {
                 _interactable.SetDescription(_interactDescription);
                 _interactable.OnInteractAttemptResultServer += Dispense;
             }
-
-            base.OnNetworkSpawn();
         }
 
         public override void OnNetworkDespawn()
