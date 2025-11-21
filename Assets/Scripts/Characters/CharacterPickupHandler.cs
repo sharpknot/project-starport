@@ -3,6 +3,8 @@ using NaughtyAttributes;
 using Starport.Pickups;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Starport.Characters
 {
@@ -26,8 +28,11 @@ namespace Starport.Characters
         private PickupController _pickupToAttempt = null;
         private bool _hasCurrentPickup = false;
         private Sequence _pickupAttempt = null;
-        private static readonly float _pickupAttemptDuration = 2f;
+        private static readonly float _pickupAttemptDuration = 2f, _toPlayerSpeed = 30f;
         private bool _allowPickup = true;
+
+        private IEnumerator _toPlayerProcess = null;
+
 
         private void Update()
         {
@@ -42,6 +47,7 @@ namespace Starport.Characters
         private void OnDestroy()
         {
             KillPickupAttemptSequence();
+            KillToPlayerProcess();
             if (_pickupToAttempt != null)
                 _pickupToAttempt.OnPickupAttemptResult -= PickupAttemptResult;
         }
@@ -91,6 +97,8 @@ namespace Starport.Characters
             {
                 return;
             }
+
+            KillToPlayerProcess();
 
             CurrentPickup.ReleasePickup();
             Debug.Log($"[CharacterPickupHandler] Pickup {CurrentPickup.gameObject.name} dropped!");
@@ -223,6 +231,10 @@ namespace Starport.Characters
             KillPickupAttemptSequence();
             SetCurrentPickup(_pickupToAttempt);
             _hasCurrentPickup = (CurrentPickup != null);
+
+            KillToPlayerProcess();
+            _toPlayerProcess = ToPlayerProcess();
+            StartCoroutine(_toPlayerProcess);
         }
 
         private void KillPickupAttemptSequence()
@@ -232,9 +244,17 @@ namespace Starport.Characters
             _pickupAttempt = null;
         }
 
+        private void KillToPlayerProcess()
+        {
+            if( _toPlayerProcess == null) return;
+            StopCoroutine(_toPlayerProcess);
+            _toPlayerProcess = null;
+        }
+
         private void UpdateCurrentPickupPosition()
         {
             if(CurrentPickup == null) return;
+            if (_toPlayerProcess != null) return;
 
             Vector3 holdPosition = transform.position + transform.forward + transform.up;
             Quaternion holdRotation = transform.rotation;
@@ -251,6 +271,68 @@ namespace Starport.Characters
 
             CurrentPickup.Rigidbody.linearVelocity = Vector3.zero;
             CurrentPickup.Rigidbody.AddForce(force, ForceMode.VelocityChange);
+        }
+
+        private IEnumerator ToPlayerProcess()
+        {
+            if(CurrentPickup == null)
+            {
+                _toPlayerProcess = null;
+                yield break;
+            }
+
+            if(IsCurrentPickupBetweenCharacterAndHold())
+            {
+                CurrentPickup.Rigidbody.isKinematic = false;
+                _toPlayerProcess = null;
+                yield break;
+            }
+
+            CurrentPickup.Rigidbody.isKinematic = true;
+
+            while (true)
+            {
+                yield return null;
+
+                if (CurrentPickup == null)
+                {
+                    _toPlayerProcess = null;
+                    yield break;
+                }
+
+                Vector3 holdPosition = transform.position + transform.forward + transform.up;
+                if (_pickupHoldReference != null)
+                    holdPosition = _pickupHoldReference.position;
+
+                Vector3 moveDir = holdPosition - CurrentPickup.transform.position;
+                float maxDistance = _toPlayerSpeed * Time.deltaTime;
+
+                moveDir = Vector3.ClampMagnitude(moveDir, maxDistance);
+                Vector3 currentPos = moveDir + CurrentPickup.transform.position;
+
+                CurrentPickup.transform.position = currentPos;
+                if (currentPos == holdPosition)
+                    break;
+            }
+
+            _toPlayerProcess = null;
+            if (CurrentPickup != null)
+                CurrentPickup.Rigidbody.isKinematic = false;
+        }
+
+        private bool IsCurrentPickupBetweenCharacterAndHold()
+        {
+            Vector3 tgtHoldPosition = transform.position + transform.forward + transform.up;
+            if (_pickupHoldReference != null)
+                tgtHoldPosition = _pickupHoldReference.position;
+
+            Vector3 pickToPlayer = transform.position - tgtHoldPosition;
+            Vector3 pickToHold = tgtHoldPosition - CurrentPickup.transform.position;
+
+            Vector3 projToPlayer = Vector3.ProjectOnPlane(pickToPlayer, transform.up);
+            Vector3 projToHold = Vector3.ProjectOnPlane(pickToHold, transform.up);
+
+            return Vector3.Dot(projToPlayer, projToHold) <= 0f;
         }
     }
 }

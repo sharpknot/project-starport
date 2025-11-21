@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using Starport.Pickups;
 
-namespace Starport
+namespace Starport.Sockets
 {
     [RequireComponent(typeof(NetworkObject), typeof(NetworkTransform))]
     public class SocketBaseController : NaughtyNetworkBehaviour
@@ -45,6 +45,8 @@ namespace Starport
                 CurrentPickup.NetworkObject.TryRemoveParent(true);
                 _previousPickup = CurrentPickup;
                 CurrentPickup = null;
+
+                SocketEmptied();
                 OnSocketUpdate?.Invoke(CurrentPickup);
             }
 
@@ -94,6 +96,7 @@ namespace Starport
             }
             CurrentPickup.transform.SetParent(transform, true);
 
+            SocketFilled();
             OnSocketUpdate?.Invoke(CurrentPickup);
         }
 
@@ -113,6 +116,9 @@ namespace Starport
 
                 CurrentPickup.transform.SetParent(transform, true);
             }
+
+            if (CurrentPickup != null) SocketFilled();
+            else SocketEmptied();
 
             OnSocketUpdate?.Invoke(CurrentPickup);
         }
@@ -139,6 +145,9 @@ namespace Starport
 
             return null;
         }
+
+        protected virtual void SocketEmptied() { }
+        protected virtual void SocketFilled() { }
         
     }
 }

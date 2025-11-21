@@ -15,6 +15,8 @@ namespace Starport
         public static void SetText(TMP_Text textBox, string text)
         {
             if(textBox == null) return;
+            if(textBox.text == text) return;
+            
             textBox.text = text;
         }
     }

@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Starport.Pickups
 {
-    public class ReactorCoolantCanister : PickupController
+    public class FluidCanister : PickupController
     {
-        [SerializeField] private string _canisterName = "Reactor Coolant";
-        
+        [field: SerializeField] public Fluid FluidType { get; private set; }
+
         private NetworkVariable<float> _capacity = new(
             1f, 
             NetworkVariableReadPermission.Everyone, 
@@ -43,8 +43,10 @@ namespace Starport.Pickups
 
         private void UpdateDescription()
         {
-            Description.Title = _canisterName;
-            Description.Description = $"Tank containing coolant fluid for reactor.\nCapacity {string.Format("{0:0.0%}", GetCurrentCapacity())}";
+            string fluidName = "NULL FLUID";
+            if (FluidType != null) fluidName = FluidType.FluidName;
+            Description.Title = $"{fluidName} Canister";
+            Description.Description = $"Canister containing {fluidName}.\nCapacity {string.Format("{0:0.0%}", GetCurrentCapacity())}";
         }
     }
 }
