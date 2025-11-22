@@ -19,5 +19,10 @@ namespace Starport
             
             textBox.text = text;
         }
+
+        public static string GetPercentage(float percent)
+        {
+            return string.Format("{0:0.0%}", percent);
+        }
     }
 }

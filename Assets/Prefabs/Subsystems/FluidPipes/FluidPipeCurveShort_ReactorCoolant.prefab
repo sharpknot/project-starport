@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2029207617237888909
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3747396591265430846, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 673443bdcb7bf2f47be93ce60e68966f, type: 2}
+    - target: {fileID: 4889450036437358407, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: _fluid
+      value: 
+      objectReference: {fileID: 11400000, guid: bfb3ef7d9af7bd349841967ad636f98f, type: 2}
+    - target: {fileID: 6322595323942676385, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3570253475
+      objectReference: {fileID: 0}
+    - target: {fileID: 7016797045688361792, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_Name
+      value: FluidPipeCurveShort_ReactorCoolant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7041441392070576331, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8484830213431072772, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3831732038
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ed1de4582bcdbb84092d7fab2bd9b5d3, type: 3}

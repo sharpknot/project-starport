@@ -51,6 +51,12 @@ namespace Starport
                 return;
             }
 
+            if(!NetworkObject.IsSpawned)
+            {
+                Debug.LogWarning("[InteractableController] SetDescription called when network object hasn't yet spawned. Ignored");
+                return;
+            }
+
             _description.Value = new FixedString128Bytes(description);
         }
 
