@@ -24,24 +24,32 @@ namespace Starport.Subsystems
         {
             get
             {
-                if (_fixable == null) return 0f;
-                return _fixable.FixedAmount;
+                if (!NetworkObject.IsSpawned) return 0f;
+                return _currentFixAmount.Value;
             }
         }
+
+        private NetworkVariable<float> _currentFixAmount = new(
+            0f, 
+            NetworkVariableReadPermission.Everyone, 
+            NetworkVariableWritePermission.Server
+            );
+
         protected event UnityAction<float> OnCurrentFixAmountUpdate;
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
             InitializeFixValues();
-            if (_fixable != null)
-                _fixable.OnFixAmountUpdate += OnFixAmountUpdate;
+            SubscribeServerEvents();
+
+            _currentFixAmount.OnValueChanged += OnFixAmountUpdate;
         }
 
         public override void OnNetworkDespawn()
         {
-            if (_fixable != null)
-                _fixable.OnFixAmountUpdate -= OnFixAmountUpdate;
+            _currentFixAmount.OnValueChanged -= OnFixAmountUpdate;
+            UnsubscribeServerEvents();
             base.OnNetworkDespawn();
         }
 
@@ -66,16 +74,44 @@ namespace Starport.Subsystems
                 fullyFixed = Random.Range(0f, 1f) <= _fullyFixedChance;
             }
 
-            if(fullyFixed)
+            float fixedVal = 1f;
+
+            if(!fullyFixed)
             {
-                _fixable.FixedAmount = 1f;
-                return;
+                fixedVal = Random.Range(_brokenRange.x, _brokenRange.y);
             }
 
-            _fixable.FixedAmount = Random.Range(_brokenRange.x, _brokenRange.y);
+            _fixable.FixedAmount = fixedVal;
+            _currentFixAmount.Value = fixedVal;
+
         }
 
-        private void OnFixAmountUpdate(float amount, bool isFixed) => OnCurrentFixAmountUpdate?.Invoke(amount);
+        private void SubscribeServerEvents()
+        {
+            UnsubscribeServerEvents();
+            if (!IsServer) return;
+            if(_fixable ==null) return;
+            _fixable.OnFixAmountUpdate += OnFixableCurrentFixAmountUpdate;
+        }
 
+        private void UnsubscribeServerEvents()
+        {
+            if (!IsServer) return;
+            if (_fixable == null) return;
+            _fixable.OnFixAmountUpdate -= OnFixableCurrentFixAmountUpdate;
+        }
+
+        private void OnFixableCurrentFixAmountUpdate(float amount, bool isFixed)
+        {
+            if (!IsServer) return;
+
+            if (amount == _currentFixAmount.Value) return;
+            _currentFixAmount.Value = amount;
+        }
+
+        private void OnFixAmountUpdate(float prev, float current)
+        {
+            OnCurrentFixAmountUpdate?.Invoke(CurrentFixAmount);
+        }
     }
 }

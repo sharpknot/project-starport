@@ -1,3 +1,4 @@
+using Starport.Tools;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -17,6 +18,9 @@ namespace Starport.Characters
         }
         private PlayerStateManager _stateManager;
 
+        [SerializeField]
+        private ToolBase _repairTool, _pickupTool;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -30,6 +34,20 @@ namespace Starport.Characters
             {
                 StateManager.DisableCamera();
             }
+
+            EquipPlayerTool(_repairTool, 0);
+            EquipPlayerTool(_pickupTool, 1);
+        }
+
+        private void EquipPlayerTool(ToolBase tool, int index)
+        {
+            if (StateManager.ToolsHandler == null) return;
+            if(tool == null) return;
+
+            GameObject g = Instantiate(tool.gameObject, transform.position, Quaternion.identity);
+            ToolBase t = g.GetComponent<ToolBase>();
+
+            StateManager.ToolsHandler.Equip(t, index, StateManager);
         }
     }
 }

@@ -154,6 +154,60 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool0"",
+                    ""type"": ""Button"",
+                    ""id"": ""ff55425d-66f0-4089-85e1-4ecec2e60103"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool1"",
+                    ""type"": ""Button"",
+                    ""id"": ""b38bd392-edd7-433f-b92e-fc229e748429"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool2"",
+                    ""type"": ""Button"",
+                    ""id"": ""45b659c4-51cd-4172-9cb2-955d3c9af684"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool3"",
+                    ""type"": ""Button"",
+                    ""id"": ""dfa85091-b5de-4341-9d07-8773fd4d64d2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UseTool4"",
+                    ""type"": ""Button"",
+                    ""id"": ""b1302b0d-8006-44cb-9159-1f201abf9359"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CycleTool"",
+                    ""type"": ""Value"",
+                    ""id"": ""ba4774f8-7294-4ea1-9166-fd12fdfe48b4"",
+                    ""expectedControlType"": ""Delta"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -321,6 +375,72 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2834a6f0-4057-496a-98e0-f487ec166a0f"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool0"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51393cb3-1489-4c62-8540-a4989a6d250a"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""46a44de0-d470-4a22-a3d5-e7107e77e688"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""80fb40d7-2457-4dfc-b2fc-5821da01d7bb"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""22789fcc-7b82-489c-8515-3e0f6e19ac0c"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UseTool4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c1d96c34-d94d-4c55-af77-f5d4fb9ad633"",
+                    ""path"": ""<Mouse>/scroll/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CycleTool"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -364,6 +484,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Main_PrimaryAction = m_Main.FindAction("PrimaryAction", throwIfNotFound: true);
         m_Main_SecondaryAction = m_Main.FindAction("SecondaryAction", throwIfNotFound: true);
         m_Main_Interact = m_Main.FindAction("Interact", throwIfNotFound: true);
+        m_Main_UseTool0 = m_Main.FindAction("UseTool0", throwIfNotFound: true);
+        m_Main_UseTool1 = m_Main.FindAction("UseTool1", throwIfNotFound: true);
+        m_Main_UseTool2 = m_Main.FindAction("UseTool2", throwIfNotFound: true);
+        m_Main_UseTool3 = m_Main.FindAction("UseTool3", throwIfNotFound: true);
+        m_Main_UseTool4 = m_Main.FindAction("UseTool4", throwIfNotFound: true);
+        m_Main_CycleTool = m_Main.FindAction("CycleTool", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -451,6 +577,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Main_PrimaryAction;
     private readonly InputAction m_Main_SecondaryAction;
     private readonly InputAction m_Main_Interact;
+    private readonly InputAction m_Main_UseTool0;
+    private readonly InputAction m_Main_UseTool1;
+    private readonly InputAction m_Main_UseTool2;
+    private readonly InputAction m_Main_UseTool3;
+    private readonly InputAction m_Main_UseTool4;
+    private readonly InputAction m_Main_CycleTool;
     /// <summary>
     /// Provides access to input actions defined in input action map "Main".
     /// </summary>
@@ -490,6 +622,30 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Main/Interact".
         /// </summary>
         public InputAction @Interact => m_Wrapper.m_Main_Interact;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/UseTool0".
+        /// </summary>
+        public InputAction @UseTool0 => m_Wrapper.m_Main_UseTool0;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/UseTool1".
+        /// </summary>
+        public InputAction @UseTool1 => m_Wrapper.m_Main_UseTool1;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/UseTool2".
+        /// </summary>
+        public InputAction @UseTool2 => m_Wrapper.m_Main_UseTool2;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/UseTool3".
+        /// </summary>
+        public InputAction @UseTool3 => m_Wrapper.m_Main_UseTool3;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/UseTool4".
+        /// </summary>
+        public InputAction @UseTool4 => m_Wrapper.m_Main_UseTool4;
+        /// <summary>
+        /// Provides access to the underlying input action "Main/CycleTool".
+        /// </summary>
+        public InputAction @CycleTool => m_Wrapper.m_Main_CycleTool;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -537,6 +693,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @UseTool0.started += instance.OnUseTool0;
+            @UseTool0.performed += instance.OnUseTool0;
+            @UseTool0.canceled += instance.OnUseTool0;
+            @UseTool1.started += instance.OnUseTool1;
+            @UseTool1.performed += instance.OnUseTool1;
+            @UseTool1.canceled += instance.OnUseTool1;
+            @UseTool2.started += instance.OnUseTool2;
+            @UseTool2.performed += instance.OnUseTool2;
+            @UseTool2.canceled += instance.OnUseTool2;
+            @UseTool3.started += instance.OnUseTool3;
+            @UseTool3.performed += instance.OnUseTool3;
+            @UseTool3.canceled += instance.OnUseTool3;
+            @UseTool4.started += instance.OnUseTool4;
+            @UseTool4.performed += instance.OnUseTool4;
+            @UseTool4.canceled += instance.OnUseTool4;
+            @CycleTool.started += instance.OnCycleTool;
+            @CycleTool.performed += instance.OnCycleTool;
+            @CycleTool.canceled += instance.OnCycleTool;
         }
 
         /// <summary>
@@ -569,6 +743,24 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @UseTool0.started -= instance.OnUseTool0;
+            @UseTool0.performed -= instance.OnUseTool0;
+            @UseTool0.canceled -= instance.OnUseTool0;
+            @UseTool1.started -= instance.OnUseTool1;
+            @UseTool1.performed -= instance.OnUseTool1;
+            @UseTool1.canceled -= instance.OnUseTool1;
+            @UseTool2.started -= instance.OnUseTool2;
+            @UseTool2.performed -= instance.OnUseTool2;
+            @UseTool2.canceled -= instance.OnUseTool2;
+            @UseTool3.started -= instance.OnUseTool3;
+            @UseTool3.performed -= instance.OnUseTool3;
+            @UseTool3.canceled -= instance.OnUseTool3;
+            @UseTool4.started -= instance.OnUseTool4;
+            @UseTool4.performed -= instance.OnUseTool4;
+            @UseTool4.canceled -= instance.OnUseTool4;
+            @CycleTool.started -= instance.OnCycleTool;
+            @CycleTool.performed -= instance.OnCycleTool;
+            @CycleTool.canceled -= instance.OnCycleTool;
         }
 
         /// <summary>
@@ -684,5 +876,47 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool0" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool0(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool1(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool2(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool3" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool3(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "UseTool4" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnUseTool4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CycleTool" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCycleTool(InputAction.CallbackContext context);
     }
 }

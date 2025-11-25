@@ -12,29 +12,42 @@ namespace Starport.PlayerState
             base.EnterState(stateManager);
             SubscribeInputEvents();
 
-            if(PickupHandler  != null)
-                PickupHandler.SetAllowPickup(true);
-            if (InteractableController != null)
-                InteractableController.SetAllowInteract(true);
             StateManager.EnableAndUseCamera();
-
-            CharacterPickupHandler.OnCurrentPickupUpdate += CurrentPickupUpdate;
         }
 
         public override void UpdateState(float deltaTime)
         {
             base.UpdateState(deltaTime);
             UpdateLook();
+            UpdatePrimaryPressed(deltaTime);
+            UpdateSecondaryPressed(deltaTime);
         }
 
         public override void ExitState()
         {
             UnsubscribeInputEvents();
 
-            CharacterPickupHandler.OnCurrentPickupUpdate -= CurrentPickupUpdate;
-
             base.ExitState();
         }
+
+        private void UpdatePrimaryPressed(float deltaTime)
+        {
+            if(InputManager == null) return;
+            if (!InputManager.IsPrimaryPressed) return;
+            if(ToolsHandler == null) return;
+
+            ToolsHandler.PrimaryPressedAction(deltaTime);
+        }
+
+        private void UpdateSecondaryPressed(float deltaTime)
+        {
+            if (InputManager == null) return;
+            if (!InputManager.IsPrimaryPressed) return;
+            if (ToolsHandler == null) return;
+
+            ToolsHandler.SecondaryPressedAction(deltaTime);
+        }
+
 
         private void SubscribeInputEvents()
         {
@@ -46,6 +59,10 @@ namespace Starport.PlayerState
             InputManager.OnPrimaryInput += PrimaryAction;
             InputManager.OnSecondaryInput += SecondaryAction;
             InputManager.OnInteractInput += InteractAction;
+            InputManager.OnEquipToolInput += EquipToolAction;
+
+            InputManager.OnNextToolInput += EquipNextTool;
+            InputManager.OnPreviousToolInput += EquipPreviousTool;
         }
 
         private void UnsubscribeInputEvents()
@@ -55,6 +72,10 @@ namespace Starport.PlayerState
             InputManager.OnPrimaryInput -= PrimaryAction;
             InputManager.OnSecondaryInput -= SecondaryAction;
             InputManager.OnInteractInput -= InteractAction;
+            InputManager.OnEquipToolInput -= EquipToolAction;
+
+            InputManager.OnNextToolInput -= EquipNextTool;
+            InputManager.OnPreviousToolInput -= EquipPreviousTool;
         }
 
         private void OpenOptionsMenu()
@@ -66,26 +87,43 @@ namespace Starport.PlayerState
 
         private void PrimaryAction()
         {
-            if(PickupHandler == null) return;
-            if(PickupHandler.CurrentPickup != null)
-            {
-                PickupHandler.ThrowCurrentPickup();
-            } 
+            if (ToolsHandler != null)
+                ToolsHandler.PrimaryAction();
         }
 
         private void SecondaryAction()
         {
-            if(PickupHandler == null) return;
+            if (ToolsHandler != null)
+                ToolsHandler.SecondaryAction();
+        }
 
-            if (PickupHandler.CurrentPickup == null)
+        private void EquipToolAction(int toolIndex)
+        {
+            if(ToolsHandler == null) return;
+            ToolsHandler.SetCurrentTool(toolIndex);
+        }
+
+        private void EquipNextTool() => CycleTool(true);
+        private void EquipPreviousTool() => CycleTool(false);
+        private void CycleTool(bool nextTool)
+        {
+            if (ToolsHandler == null) return;
+
+            int nextIndex = 0;
+            if(nextTool)
             {
-                PickupHandler.AttemptPickup();
-            }  
+                nextIndex = ToolsHandler.CurrentToolIndex + 1;
+                if (nextIndex >= ToolsHandler.Tools.Length)
+                    nextIndex = 0;
+            }
             else
             {
-                PickupHandler.DropCurrentPickup();
+                nextIndex = ToolsHandler.CurrentToolIndex - 1;
+                if (nextIndex < 0) 
+                    nextIndex = ToolsHandler.Tools.Length - 1;
             }
-                
+
+            ToolsHandler.SetCurrentTool(nextIndex);
         }
 
         private void InteractAction()
@@ -97,14 +135,6 @@ namespace Starport.PlayerState
                 return;
 
             InteractableController.AttemptInteract(CharacterNetworkManager);
-        }
-
-        private void CurrentPickupUpdate(PickupController currentPickup)
-        {
-            if (InteractableController != null)
-            {
-                InteractableController.SetAllowInteract(currentPickup == null);
-            }
         }
     }
 }

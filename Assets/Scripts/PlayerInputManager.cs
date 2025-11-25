@@ -62,6 +62,11 @@ namespace Starport
 
         public event UnityAction OnJumpInput, OnOptionsMenuInput;
         public event UnityAction OnPrimaryInput, OnSecondaryInput, OnInteractInput;
+        public event UnityAction<int> OnEquipToolInput;
+        public event UnityAction OnNextToolInput, OnPreviousToolInput;
+
+        public bool IsPrimaryPressed { get; private set; } = false;
+        public bool IsSecondaryPressed { get; private set; } = false;
 
         public Vector3 GetWorldFlatMoveDirection(Camera camera)
         {
@@ -93,6 +98,8 @@ namespace Starport
         {
             UpdateLookDelta();
             UpdateMoveInput();
+            UpdatePrimarySecondaryPressed();
+            UpdateCycleEquipment();
         }
 
         private void OnDestroy()
@@ -109,6 +116,22 @@ namespace Starport
         {
             Vector2 input = InputActions.Main.Movement.ReadValue<Vector2>();
             MovementInput = Vector2.ClampMagnitude(input, 1f);
+        }
+
+        private void UpdateCycleEquipment()
+        {
+            float val = InputActions.Main.CycleTool.ReadValue<float>();
+            if (Mathf.Abs(val) <= 0.5f) return;
+
+            if(val > 0f)
+            {
+                Debug.Log("[PlayerInputManager] Previous tool");
+                OnPreviousToolInput?.Invoke();
+                return;
+            }
+
+            Debug.Log("[PlayerInputManager] Next tool");
+            OnNextToolInput?.Invoke();
         }
 
         private Vector3 GetWorldFlatMoveDirectionTransform(Transform transform)
@@ -139,6 +162,12 @@ namespace Starport
             InputActions.Main.PrimaryAction.performed += OnPrimary;
             InputActions.Main.SecondaryAction.performed += OnSecondary;
             InputActions.Main.Interact.performed += OnInteract;
+
+            InputActions.Main.UseTool0.performed += OnEquipTool0;
+            InputActions.Main.UseTool1.performed += OnEquipTool1;
+            InputActions.Main.UseTool2.performed += OnEquipTool2;
+            InputActions.Main.UseTool3.performed += OnEquipTool3;
+            InputActions.Main.UseTool4.performed += OnEquipTool4;
         }
 
         private void ClearInputEvents()
@@ -151,6 +180,25 @@ namespace Starport
             InputActions.Main.PrimaryAction.performed -= OnPrimary;
             InputActions.Main.SecondaryAction.performed -= OnSecondary;
             InputActions.Main.Interact.performed -= OnInteract;
+
+            InputActions.Main.UseTool0.performed -= OnEquipTool0;
+            InputActions.Main.UseTool1.performed -= OnEquipTool1;
+            InputActions.Main.UseTool2.performed -= OnEquipTool2;
+            InputActions.Main.UseTool3.performed -= OnEquipTool3;
+            InputActions.Main.UseTool4.performed -= OnEquipTool4;
+        }
+
+        private void UpdatePrimarySecondaryPressed()
+        {
+            if (InputActions == null)
+            {
+                IsPrimaryPressed = false;
+                IsSecondaryPressed = false;
+                return;
+            }
+
+            IsPrimaryPressed = InputActions.Main.PrimaryAction.IsPressed();
+            IsSecondaryPressed = InputActions.Main.SecondaryAction.IsPressed();
         }
 
         private void OnJump(InputAction.CallbackContext ctx) => OnJumpInput?.Invoke();
@@ -158,6 +206,12 @@ namespace Starport
         private void OnPrimary(InputAction.CallbackContext ctx) => OnPrimaryInput?.Invoke();
         private void OnSecondary(InputAction.CallbackContext ctx) => OnSecondaryInput?.Invoke();
         private void OnInteract(InputAction.CallbackContext ctx) => OnInteractInput?.Invoke();
+
+        private void OnEquipTool0(InputAction.CallbackContext ctx) => OnEquipToolInput?.Invoke(0);
+        private void OnEquipTool1(InputAction.CallbackContext ctx) => OnEquipToolInput?.Invoke(1);
+        private void OnEquipTool2(InputAction.CallbackContext ctx) => OnEquipToolInput?.Invoke(2);
+        private void OnEquipTool3(InputAction.CallbackContext ctx) => OnEquipToolInput?.Invoke(3);
+        private void OnEquipTool4(InputAction.CallbackContext ctx) => OnEquipToolInput?.Invoke(4);
 
     }
 }

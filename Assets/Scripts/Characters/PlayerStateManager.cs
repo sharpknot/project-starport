@@ -35,6 +35,8 @@ namespace Starport.Characters
         [field: SerializeField] public CharacterAnimatorController AnimatorController { get; private set; }
         [field: SerializeField] public CharacterNetworkManager CharacterNetworkManager { get; private set; }
         [field: SerializeField] public CharacterInteractableController InteractableController { get; private set; }
+        [field: SerializeField] public CharacterFixableController FixableController { get; private set; }
+        [field: SerializeField] public CharacterToolsHandler ToolsHandler { get; private set; }
 
         [field: SerializeField, ReadOnly] 
         public bool HasOpenedOptionsMenu { get; private set; } = false;
@@ -55,6 +57,9 @@ namespace Starport.Characters
             InputManager.InputEnabled = true;
 
             UIEvents.HiddenOptionsMenu += OnOptionsMenuClosed;
+
+            if (InteractableController != null)
+                InteractableController.SetAllowInteract(true);
 
             HideRenderers();
 

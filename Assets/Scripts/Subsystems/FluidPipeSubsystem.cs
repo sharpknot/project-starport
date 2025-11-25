@@ -21,14 +21,14 @@ namespace Starport.Subsystems
             if (_description == null)
                 return;
 
+            OnCurrentFixAmountUpdate += UpdateDescription;
+
             string fluidName = "Unknown fluid";
             if (_fluid != null)
                 fluidName = _fluid.FluidName;
 
             _description.Title = $"{fluidName} Pipe";
             UpdateDescription(CurrentFixAmount);
-
-            OnCurrentFixAmountUpdate += UpdateDescription;
         }
 
         public override void OnNetworkDespawn()
