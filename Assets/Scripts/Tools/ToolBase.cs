@@ -6,6 +6,8 @@ namespace Starport.Tools
     public class ToolBase : MonoBehaviour
     {
         [field: SerializeField] public string ToolName { get; private set; } = "Default Tool";
+        [field: SerializeField] public Sprite ToolIcon { get; private set; }
+
         protected virtual string GetDescription() => "Default tool description";
 
         protected PlayerStateManager StateManager { get; private set; } = null;

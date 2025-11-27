@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ToolName>k__BackingField: Pickup Tool
+  <ToolIcon>k__BackingField: {fileID: 0}
   _parentMesh: {fileID: 1624136486761509990}
 --- !u!1001 &2713575486795451166
 PrefabInstance:
@@ -90,6 +91,10 @@ PrefabInstance:
     - target: {fileID: 1320539295254762, guid: e9be0263a06856c4d96e5614c5650332, type: 3}
       propertyPath: m_Name
       value: SM_Prop_BoxingGlove_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1320539295254762, guid: e9be0263a06856c4d96e5614c5650332, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4624705404240664, guid: e9be0263a06856c4d96e5614c5650332, type: 3}
       propertyPath: m_LocalPosition.x

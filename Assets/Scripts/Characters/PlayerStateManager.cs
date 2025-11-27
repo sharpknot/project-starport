@@ -5,6 +5,7 @@ using NaughtyAttributes;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 using Starport.UI;
+using UnityEngine.Rendering.Universal;
 
 namespace Starport.Characters
 {
@@ -12,6 +13,8 @@ namespace Starport.Characters
     {
         [field: SerializeField] 
         public CinemachineCamera FirstPersonCamera { get; private set; }
+
+        [SerializeField] private Camera _firstPersonRenderCamera;
 
         [SerializeField] private Renderer[] _hideableRenderers;
         [SerializeField] private bool _initializeOnAwake = true;
@@ -63,6 +66,8 @@ namespace Starport.Characters
 
             HideRenderers();
 
+            AddRenderCameraToStack();
+
             StartInitialState(ref _currentBaseState, _startBaseState, _defaultBaseState);
             StartInitialState(ref _currentLocomotionState, _startLocomotionState, _defaultLocomotionState);
 
@@ -75,16 +80,26 @@ namespace Starport.Characters
 
         public void DisableCamera()
         {
-            if(FirstPersonCamera != null) 
+            if(FirstPersonCamera != null)
+            {
                 FirstPersonCamera.gameObject.SetActive(false);
+            }
+             
+            if(_firstPersonRenderCamera != null)
+                _firstPersonRenderCamera.enabled = false;
+
         }
 
         public void EnableAndUseCamera()
         {
-            if (FirstPersonCamera == null) return;
-            
-            FirstPersonCamera.Prioritize();
-            FirstPersonCamera.gameObject.SetActive(true);
+            if(FirstPersonCamera != null)
+            {
+                FirstPersonCamera.Prioritize();
+                FirstPersonCamera.gameObject.SetActive(true);
+            }
+
+            if (_firstPersonRenderCamera != null)
+                _firstPersonRenderCamera.enabled = true;
         }
 
         public void HideRenderers()
@@ -125,6 +140,38 @@ namespace Starport.Characters
             StopCurrentState(ref _currentLocomotionState);
 
             UIEvents.HiddenOptionsMenu -= OnOptionsMenuClosed;
+        }
+
+        private void AddRenderCameraToStack()
+        {
+            if(_firstPersonRenderCamera == null)
+            {
+                Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: first person renderer camera missing");
+                return;
+            }
+
+            Camera mainCam = Camera.main;
+            if(mainCam == null )
+            {
+                Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: Main camera is null");
+                return;
+            }
+
+            UniversalAdditionalCameraData camData = mainCam.GetUniversalAdditionalCameraData();
+            if (camData == null)
+            {
+                Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: UniversalAdditionalCameraData missing");
+                return;
+            }
+
+            List<Camera> stack = camData.cameraStack;
+            if(stack == null )
+            {
+                Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: null stack");
+                return;
+            }
+
+            stack.Add(_firstPersonRenderCamera);
         }
 
         private Dictionary<Renderer, ShadowCastingMode> GenerateShadowCastingMode()

@@ -78,6 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ToolName>k__BackingField: Repair Tool
+  <ToolIcon>k__BackingField: {fileID: 0}
   _repairSpeed: 0.2
   _parentMesh: {fileID: 1334517379779965805}
 --- !u!1001 &3754527661472363350
@@ -88,9 +89,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8746862272531073393}
     m_Modifications:
+    - target: {fileID: 1062475283290556, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 1347901682671290, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
       propertyPath: m_Name
       value: SM_Prop_Pistol_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347901682671290, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1806548636820176, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1866278781135652, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4849140651953746, guid: b017a00e018b1bc4f9ef2a84e5644a92, type: 3}
       propertyPath: m_LocalPosition.x
