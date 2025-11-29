@@ -47,6 +47,7 @@ namespace Starport
         public bool IsFixed => FixedAmount >= 1f;
 
         public event UnityAction<float, bool> OnFixAmountUpdate;
+        public event UnityAction<Vector3, Quaternion> OnFixPointUpdate;
         public event UnityAction<bool> OnFixableUpdate;
 
         public override void OnNetworkSpawn()
@@ -65,25 +66,29 @@ namespace Starport
             base.OnNetworkDespawn();
         }
 
-        public void AttemptFix(float amountToFix) => SetAmountToFixServerRpc(amountToFix);
+        public void AttemptFix(float amountToFix, Vector3 fixPoint, Quaternion fixRotationToFixer) => SetAmountToFixServerRpc(amountToFix, fixPoint, fixRotationToFixer);
 
         private void FixAmountUpdated(float prev, float current)
         {
             OnFixAmountUpdate?.Invoke(_fixedAmount.Value, _fixedAmount.Value >= 1f);
         }
 
-        private void FixableUpdated(bool prev, bool  current) 
+        private void FixableUpdated(bool prev, bool current) 
         {
             OnFixableUpdate?.Invoke(_isFixable.Value);
         }
 
         [Rpc(SendTo.Server)]
-        private void SetAmountToFixServerRpc(float amountToFix)
+        private void SetAmountToFixServerRpc(float amountToFix, Vector3 fixPoint, Quaternion fixRotationToFixer)
         {
             float finalFixedAmount = Mathf.Clamp01(amountToFix +  _fixedAmount.Value);
             if (finalFixedAmount == _fixedAmount.Value) return;
 
             _fixedAmount.Value = finalFixedAmount;
+            SetFixPointRpc(fixPoint, fixRotationToFixer);
         }
+
+        [Rpc(SendTo.Everyone)]
+        private void SetFixPointRpc(Vector3 fixPoint, Quaternion fixRotationToFixer) => OnFixPointUpdate?.Invoke(fixPoint, fixRotationToFixer);
     }
 }

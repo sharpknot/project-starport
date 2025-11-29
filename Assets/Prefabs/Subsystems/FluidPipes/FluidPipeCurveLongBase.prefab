@@ -279,6 +279,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1549752290770600, guid: f643a3f3b0194c441969caf694be2643, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6337433743443215471}
+    - targetCorrespondingSourceObject: {fileID: 1549752290770600, guid: f643a3f3b0194c441969caf694be2643, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2431813629634730001}
   m_SourcePrefab: {fileID: 100100000, guid: f643a3f3b0194c441969caf694be2643, type: 3}
 --- !u!4 &5225498209133150756 stripped
 Transform:
@@ -366,6 +369,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: deaeda937651a4e439c8186002bb29db, type: 3}
+--- !u!114 &2431813629634730001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5229120541903962650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a09e4fc4e86405a4397314b773307648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Starport.RepairEffectsController
+  ShowTopMostFoldoutHeaderGroup: 1
+  _vfx: {fileID: 828982769694921984, guid: 434ee7c762620d844912b138d0e2e67f, type: 3}
 --- !u!1001 &8352482835036198654
 PrefabInstance:
   m_ObjectHideFlags: 0

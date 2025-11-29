@@ -58,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5340849741303141510, guid: ea8c8f4e785f12542a9cbd98c2fc8fdd, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 975887476
+      value: 1182313424
       objectReference: {fileID: 0}
     - target: {fileID: 5949509675404117031, guid: ea8c8f4e785f12542a9cbd98c2fc8fdd, type: 3}
       propertyPath: _fluid
@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: bfb3ef7d9af7bd349841967ad636f98f, type: 2}
     - target: {fileID: 6451112798207764689, guid: ea8c8f4e785f12542a9cbd98c2fc8fdd, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 2020536817
+      value: 747853519
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

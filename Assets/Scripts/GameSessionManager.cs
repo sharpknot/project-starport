@@ -300,6 +300,9 @@ namespace Starport
             _isRunningDebugProcess = false;
         }
 
+        [Button("Start Offline", EButtonEnableMode.Playmode)]
+        private void DebugStartOffline() => StartOffline();
+
         [Button("Disconnect", EButtonEnableMode.Playmode)]
         private void DebugDisconnect() => Disconnect();
 

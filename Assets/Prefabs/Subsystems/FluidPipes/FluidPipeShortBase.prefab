@@ -278,6 +278,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1311991736755736, guid: 595a1042ab4ffbf4d9972c4873da508b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2846480828318272459}
+    - targetCorrespondingSourceObject: {fileID: 1311991736755736, guid: 595a1042ab4ffbf4d9972c4873da508b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4681693210281229436}
   m_SourcePrefab: {fileID: 100100000, guid: 595a1042ab4ffbf4d9972c4873da508b, type: 3}
 --- !u!4 &2121032465359744399 stripped
 Transform:
@@ -343,6 +346,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &4681693210281229436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2124288172444210515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a09e4fc4e86405a4397314b773307648, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Starport.RepairEffectsController
+  ShowTopMostFoldoutHeaderGroup: 1
+  _vfx: {fileID: 828982769694921984, guid: 434ee7c762620d844912b138d0e2e67f, type: 3}
 --- !u!1001 &6580483526687747685
 PrefabInstance:
   m_ObjectHideFlags: 0

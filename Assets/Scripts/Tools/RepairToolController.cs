@@ -48,7 +48,7 @@ namespace Starport.Tools
             if (_fixableController.CurrentFixable == null) return;
 
             float toFixAmount  = _repairSpeed * deltaTime;
-            _fixableController.CurrentFixable.AttemptFix(toFixAmount);
+            _fixableController.AttemptFix(toFixAmount);
         }
 
         private void OnValidate()

@@ -45,6 +45,8 @@ namespace Starport.Characters
         public FixableController CurrentFixable { get; private set; } = null;
         public static event UnityAction<FixableController> OnCurrentFixableUpdate;
 
+        private RaycastHit _fixPoint;
+
         private bool _allowFixing = false;
 
         public void SetAllowFixing(bool allow)
@@ -71,7 +73,7 @@ namespace Starport.Characters
             }
 
             Debug.Log($"[CharacterFixableController] Attempting to fix {CurrentFixable.gameObject.name} for {UIUtility.GetPercentage(fixAmount)}");
-            CurrentFixable.AttemptFix(fixAmount);
+            CurrentFixable.AttemptFix(fixAmount, _fixPoint.point, Quaternion.LookRotation(_fixPoint.normal, Vector3.up));
 
             return true;
         }
@@ -126,6 +128,7 @@ namespace Starport.Characters
                 {
                     closestDistance = hit.distance;
                     closest = d;
+                    _fixPoint = hit;
                 }
             }
 
