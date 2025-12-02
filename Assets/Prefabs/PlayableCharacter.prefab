@@ -749,6 +749,7 @@ MonoBehaviour:
   _rightVelocity: rightVelocity
   _baseResetTriggerParam: resetBase
   _locomotionResetTriggerParam: resetLocomotion
+  _controlPanelIndexParam: controlPanelIndex
 --- !u!114 &2362737962959119076
 MonoBehaviour:
   m_ObjectHideFlags: 0

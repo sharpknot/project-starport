@@ -250,6 +250,8 @@ namespace Starport
                 if (_playerControlPanelLocomotionState != null)
                     strLoco = _playerControlPanelLocomotionState.ToString();
 
+                Cursor.visible = true;
+
                 Debug.Log($"[ControlPanelController {gameObject.name}] ClientSuccessOwnership: Changing states... {strBase}, {strLoco}");
             }
 

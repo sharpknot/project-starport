@@ -8,6 +8,7 @@ namespace Starport.PlayerState
     public class PSLocoControlPanelSit : PSLoco
     {
         [SerializeField] private int _layer;
+        [SerializeField] private int _controlPanelIndex;
 
         public override void EnterState(PlayerStateManager stateManager)
         {

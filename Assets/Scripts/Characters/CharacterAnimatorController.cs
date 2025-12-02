@@ -189,5 +189,18 @@ namespace Starport.Characters
         }
 
         #endregion
+
+        #region Integers
+        [SerializeField, AnimatorParam("_animator", AnimatorControllerParameterType.Int)]
+        private string _controlPanelIndexParam;
+
+        public void SetControlPanelIndex(int index) => SetInteger(_controlPanelIndexParam, index);
+
+        private void SetInteger(string paramName, int value)
+        {
+            if (_animator == null) return;
+            _animator.SetInteger(paramName, value);
+        }
+        #endregion
     }
 }

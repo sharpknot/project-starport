@@ -20,10 +20,17 @@ namespace Starport.Subsystems
         public bool IsCurrentlyActive { get; private set;  } = false;
         public bool IsCurrentlyLocallyActive => IsLocallyActive.Value;
         public event UnityAction<bool> OnCurrentlyActiveUpdate;
+        public UnityEvent OnActivated = new(), OnDeactivated = new();
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+
+            if (IsCurrentlyActive) OnActivated?.Invoke();
+            else OnDeactivated?.Invoke();
+
+            OnCurrentlyActiveUpdate?.Invoke(IsCurrentlyActive);
+            IsLocallyActive.OnValueChanged += OnIsLocallyActiveValueChanged;
 
             if (!IsServer) return;
             
@@ -35,8 +42,6 @@ namespace Starport.Subsystems
                     subsystem.OnCurrentlyActiveUpdate += RequiredSubsystemActivationUpdate;
                 }
             }
-
-            IsLocallyActive.OnValueChanged += OnIsLocallyActiveValueChanged;
         }
 
         public override void OnNetworkDespawn()
@@ -82,6 +87,10 @@ namespace Starport.Subsystems
             if (IsCurrentlyActive == currentlyActive) return;
 
             IsCurrentlyActive = currentlyActive;
+
+            if (IsCurrentlyActive) OnActivated?.Invoke();
+            else OnDeactivated?.Invoke();
+
             OnCurrentlyActiveUpdate?.Invoke(IsCurrentlyActive);
         }
     }

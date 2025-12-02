@@ -24,5 +24,10 @@ namespace Starport
         {
             return string.Format("{0:0.0%}", percent);
         }
+
+        public static string GetDecimals(float decimals)
+        {
+            return string.Format("{0:0.0}", decimals);
+        }
     }
 }
