@@ -52,6 +52,8 @@ namespace Starport.Characters
         public float MaxAirSpeed { get; private set; } = 6f;
         [field: SerializeField, BoxGroup("Movement Parameters")]
         public float AirControlStrength { get; private set; } = 3f;
+
+        public float GravityMultiplier = 1f;
         
         public float NormalMoveSpeed
         {
@@ -157,7 +159,7 @@ namespace Starport.Characters
                 if (!_isGrounded || _previousVerticalVelocity > 0f)
                 {
                     netDownMotion = _previousVerticalVelocity * deltaTime;
-                    float gravVelocity = Physics.gravity.y * deltaTime;
+                    float gravVelocity = Physics.gravity.y * deltaTime * GravityMultiplier;
                     netDownMotion += (gravVelocity * deltaTime);
                 }
             }
@@ -279,6 +281,24 @@ namespace Starport.Characters
             //DebugExtension.DebugArrow(groundHit.point, groundHit.normal * 0.25f, Color.magenta);
 
             return true;
+        }
+
+        public void TeleportInstant(Vector3 worldPosition)
+        {
+            if (!_initialized)
+                InitializeMotionController();
+
+            bool wasEnabled = CharacterController.enabled;
+            CharacterController.enabled = false;
+
+            transform.position = worldPosition;
+            CharacterController.enabled = wasEnabled;
+        }
+
+        public void RotateInstant(Quaternion rotation)
+        {
+            Quaternion newRot = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
+            transform.rotation = newRot;
         }
 
         void OnControllerColliderHit(ControllerColliderHit hit)

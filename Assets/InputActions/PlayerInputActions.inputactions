@@ -357,6 +357,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "ControlPanel",
+            "id": "48f5417a-897a-4081-bb94-f03f6ccec86d",
+            "actions": [
+                {
+                    "name": "Quit",
+                    "type": "Button",
+                    "id": "faba6b04-1d56-4f49-b0c6-eb7258621a36",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e301adaa-06cf-4206-b160-33a92bc6ab33",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardAndMouse",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

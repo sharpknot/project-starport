@@ -256,5 +256,27 @@ namespace Starport.Characters
             UIEvents.ShowHUD?.Invoke(false);
             UIEvents.ShowOptionsMenu?.Invoke();
         }
+
+        public void OpenControlPanel()
+        {
+            UIEvents.ShowHUD?.Invoke(false);
+
+            if (InputManager != null)
+                InputManager.InputEnabled = false;
+
+            if (ToolsHandler != null)
+                ToolsHandler.SetUnholsterCurrentTool(false);
+        }
+
+        public void CloseControlPanel()
+        {
+            UIEvents.ShowHUD?.Invoke(true);
+
+            if (InputManager != null)
+                InputManager.InputEnabled = true;
+
+            if (ToolsHandler != null)
+                ToolsHandler.SetUnholsterCurrentTool(true);
+        }
     }
 }

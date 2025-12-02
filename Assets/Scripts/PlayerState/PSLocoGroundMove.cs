@@ -23,6 +23,11 @@ namespace Starport.PlayerState
             {
                 AnimatorController.SetLayerWeight(_layer, 1f, 0.1f);
             }
+
+            if(MotionController != null)
+            {
+                MotionController.GravityMultiplier = 1f;
+            }
         }
 
         public override void UpdateState(float deltaTime)

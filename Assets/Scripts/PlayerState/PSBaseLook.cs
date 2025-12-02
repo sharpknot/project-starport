@@ -13,6 +13,7 @@ namespace Starport.PlayerState
             SubscribeInputEvents();
 
             StateManager.EnableAndUseCamera();
+            StateManager.InteractableController.SetAllowInteract(true);
         }
 
         public override void UpdateState(float deltaTime)

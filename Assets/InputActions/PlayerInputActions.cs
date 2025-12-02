@@ -443,6 +443,34 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""ControlPanel"",
+            ""id"": ""48f5417a-897a-4081-bb94-f03f6ccec86d"",
+            ""actions"": [
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""faba6b04-1d56-4f49-b0c6-eb7258621a36"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""e301adaa-06cf-4206-b160-33a92bc6ab33"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardAndMouse"",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -490,11 +518,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Main_UseTool3 = m_Main.FindAction("UseTool3", throwIfNotFound: true);
         m_Main_UseTool4 = m_Main.FindAction("UseTool4", throwIfNotFound: true);
         m_Main_CycleTool = m_Main.FindAction("CycleTool", throwIfNotFound: true);
+        // ControlPanel
+        m_ControlPanel = asset.FindActionMap("ControlPanel", throwIfNotFound: true);
+        m_ControlPanel_Quit = m_ControlPanel.FindAction("Quit", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
     {
         UnityEngine.Debug.Assert(!m_Main.enabled, "This will cause a leak and performance issues, PlayerInputActions.Main.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_ControlPanel.enabled, "This will cause a leak and performance issues, PlayerInputActions.ControlPanel.Disable() has not been called.");
     }
 
     /// <summary>
@@ -794,6 +826,102 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MainActions" /> instance referencing this action map.
     /// </summary>
     public MainActions @Main => new MainActions(this);
+
+    // ControlPanel
+    private readonly InputActionMap m_ControlPanel;
+    private List<IControlPanelActions> m_ControlPanelActionsCallbackInterfaces = new List<IControlPanelActions>();
+    private readonly InputAction m_ControlPanel_Quit;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ControlPanel".
+    /// </summary>
+    public struct ControlPanelActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ControlPanelActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ControlPanel/Quit".
+        /// </summary>
+        public InputAction @Quit => m_Wrapper.m_ControlPanel_Quit;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ControlPanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ControlPanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ControlPanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ControlPanelActions" />
+        public void AddCallbacks(IControlPanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ControlPanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ControlPanelActionsCallbackInterfaces.Add(instance);
+            @Quit.started += instance.OnQuit;
+            @Quit.performed += instance.OnQuit;
+            @Quit.canceled += instance.OnQuit;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ControlPanelActions" />
+        private void UnregisterCallbacks(IControlPanelActions instance)
+        {
+            @Quit.started -= instance.OnQuit;
+            @Quit.performed -= instance.OnQuit;
+            @Quit.canceled -= instance.OnQuit;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ControlPanelActions.UnregisterCallbacks(IControlPanelActions)" />.
+        /// </summary>
+        /// <seealso cref="ControlPanelActions.UnregisterCallbacks(IControlPanelActions)" />
+        public void RemoveCallbacks(IControlPanelActions instance)
+        {
+            if (m_Wrapper.m_ControlPanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ControlPanelActions.AddCallbacks(IControlPanelActions)" />
+        /// <seealso cref="ControlPanelActions.RemoveCallbacks(IControlPanelActions)" />
+        /// <seealso cref="ControlPanelActions.UnregisterCallbacks(IControlPanelActions)" />
+        public void SetCallbacks(IControlPanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ControlPanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ControlPanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ControlPanelActions" /> instance referencing this action map.
+    /// </summary>
+    public ControlPanelActions @ControlPanel => new ControlPanelActions(this);
     private int m_KeyboardAndMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -918,5 +1046,20 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCycleTool(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ControlPanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ControlPanelActions.AddCallbacks(IControlPanelActions)" />
+    /// <seealso cref="ControlPanelActions.RemoveCallbacks(IControlPanelActions)" />
+    public interface IControlPanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Quit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnQuit(InputAction.CallbackContext context);
     }
 }

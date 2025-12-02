@@ -61,7 +61,7 @@ namespace Starport
         }
 
         // Client-side callback: only invoked on the client that made the attempt
-        public event UnityAction<bool> OnInteractAttemptResultClient;
+        public event UnityAction<bool, CharacterNetworkManager> OnInteractAttemptResultClient;
 
         // Server-side callback: invoked on the server when an attempt happens (with the character that attempted)
         public event UnityAction<bool, CharacterNetworkManager> OnInteractAttemptResultServer;
@@ -80,9 +80,11 @@ namespace Starport
         /// </summary>
         public void AttemptInteract(CharacterNetworkManager character)
         {
+            _currentInteractingCharacter = character;
+
             if (character == null || _hasInteractAttempt)
             {
-                OnInteractAttemptResultClient?.Invoke(false);
+                OnInteractAttemptResultClient?.Invoke(false, _currentInteractingCharacter);
                 return;
             }
 
@@ -94,6 +96,8 @@ namespace Starport
             // pass the character's NetworkObject as a reference; server will validate ownership
             RequestInteractServerRpc(new NetworkObjectReference(character.NetworkObject), character.OwnerClientId);
         }
+
+        private CharacterNetworkManager _currentInteractingCharacter;
 
         // ---------- SERVER RPC ----------
         // RequireOwnership = false so any client can call this (we validate sender server-side)
@@ -172,9 +176,11 @@ namespace Starport
         {
             // run on the client that requested interaction
             _hasInteractAttempt = false;
-            OnInteractAttemptResultClient?.Invoke(success);
+            OnInteractAttemptResultClient?.Invoke(success, _currentInteractingCharacter);
 
             Debug.Log($"[InteractableController] {gameObject.name} interact attempt: {success}");
+
+            _currentInteractingCharacter = null;
         }
 
         // Optional: tidy up pending requests when server despawns this object

@@ -77,7 +77,7 @@ namespace Starport.Characters
 
         }
 
-        private void InteractAttemptResult(bool success)
+        private void InteractAttemptResult(bool success, CharacterNetworkManager characterNetworkManager)
         {
             if (_interactableAttempted != null)
                 _interactableAttempted.OnInteractAttemptResultClient -= InteractAttemptResult;

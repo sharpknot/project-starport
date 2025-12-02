@@ -1,7 +1,8 @@
-using UnityEngine;
-using Unity.Netcode;
-using UnityEngine.Events;
 using NaughtyAttributes;
+using Starport.Characters;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace Starport
 {
@@ -28,6 +29,11 @@ namespace Starport
 
         public event UnityAction OnOwnershipReset;
         public UnityEvent OnOwnershipResetEvent = new();
+
+        public event UnityAction OnServerOwnershipReset, OnServerOwnershipRequestSuccess, OnServerOwnershipRequestFailure;
+        public UnityEvent OnServerOwnershipResetEvent = new();
+        public UnityEvent OnServerOwnershipRequestSuccessEvent = new();
+        public UnityEvent OnServerOwnershipRequestFailureEvent = new();
 
         [SerializeField, ReadOnly]
         private bool _currentHasOwner = false;
@@ -80,20 +86,25 @@ namespace Starport
             ResetOwnershipInternal();
         }
 
-
         [Rpc(SendTo.Server)]
         private void RequestOwnershipServerRpc(ulong requestingClientId)
         {
             // Already has an owner
             if (HasOwner(out ulong currentOwner) && currentOwner != requestingClientId)
             {
+                OnServerOwnershipRequestFailure?.Invoke();
+                OnServerOwnershipRequestFailureEvent?.Invoke();
+
                 OwnershipRequestResultClientRpc(requestingClientId, false);
                 return;
             }
 
             _hasOwner.Value = true;
             _currentOwner.Value = requestingClientId;
-            NetworkObject.ChangeOwnership(requestingClientId);
+            SetOwnershipRecursive(NetworkObject, requestingClientId);
+
+            OnServerOwnershipRequestSuccess?.Invoke();
+            OnServerOwnershipRequestSuccessEvent?.Invoke();
 
             OwnershipRequestResultClientRpc(requestingClientId, true);
         }
@@ -109,10 +120,11 @@ namespace Starport
 
             _hasOwner.Value = false;
             _currentOwner.Value = NetworkManager.ServerClientId;
-            NetworkObject.ChangeOwnership(NetworkManager.ServerClientId);
+            SetOwnershipRecursive(NetworkObject, NetworkManager.ServerClientId);
 
             Debug.Log($"[OwnershipController] {gameObject.name} ownership returned to {NetworkObject.OwnerClientId}");
-
+            OnServerOwnershipReset?.Invoke();
+            OnServerOwnershipResetEvent?.Invoke();
             OwnershipResetClientRpc();
         }
 
@@ -153,6 +165,25 @@ namespace Starport
             Debug.Log($"[OwnershipController] Original owner ({originalOwner}) disconnected! {gameObject.name} ownership returned to {NetworkObject.OwnerClientId}");
 
             OwnershipResetClientRpc();
+        }
+
+        private void SetOwnershipRecursive(NetworkObject root, ulong newOwner)
+        {
+            if (root == null) return;
+
+            // skip characters (or any object that shouldn't be reset)
+            if (root.TryGetComponent<CharacterNetworkManager>(out _)) return;
+
+            root.ChangeOwnership(newOwner);
+
+            foreach (Transform child in root.transform)
+            {
+                var childNetworkObject = child.GetComponent<NetworkObject>();
+                if (childNetworkObject != null)
+                {
+                    SetOwnershipRecursive(childNetworkObject, newOwner);
+                }
+            }
         }
     }
 }

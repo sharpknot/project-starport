@@ -28,6 +28,8 @@ namespace Starport.Characters
 
         public ToolBase CurrentTool => Tools[CurrentToolIndex];
 
+        private bool _unholsterCurrentTool = true;
+
         private void Start()
         {
             _ = Tools.Length;
@@ -38,6 +40,21 @@ namespace Starport.Characters
         private void OnValidate()
         {
             _toolCount = Mathf.Max(1, _toolCount);
+        }
+
+        public void SetUnholsterCurrentTool(bool unholsterCurrentTool)
+        {
+            _unholsterCurrentTool = unholsterCurrentTool;
+            if (CurrentTool == null) return;
+
+            if(_unholsterCurrentTool)
+            {
+                CurrentTool.Unholster();
+            }
+            else
+            {
+                CurrentTool.Holster();
+            }
         }
 
         public void Equip(ToolBase tool, int toolIndex, PlayerStateManager stateManager)
@@ -93,12 +110,20 @@ namespace Starport.Characters
             {
                 Debug.Log($"[CharacterToolsHandler] Equip: Unholstering new tool {tool.ToolName}, current index ({CurrentToolIndex})");
                 Tools[toolIndex].Unholster();
+
+                if(!_unholsterCurrentTool)
+                {
+                    Debug.Log($"[CharacterToolsHandler] Equip: Holstering new tool {tool.ToolName}, current index ({CurrentToolIndex}) due to current tool unholster setting");
+                    Tools[toolIndex].Holster();
+                }
             }
             else
             {
                 Debug.Log($"[CharacterToolsHandler] Equip: Holstering new tool {tool.ToolName}, current index ({CurrentToolIndex})");
                 Tools[toolIndex].Holster();
             }
+
+            
 
             Debug.Log($"[CharacterToolsHandler] Equip: Equipping new tool {tool.ToolName} at index {toolIndex} complete!");
             OnToolsUpdate?.Invoke(CurrentToolIndex, Tools);
@@ -136,6 +161,12 @@ namespace Starport.Characters
 
             Tools[CurrentToolIndex].Unholster();
             Debug.Log($"[CharacterToolsHandler] SetCurrentTool: Tool ({Tools[CurrentToolIndex].ToolName}) at index {CurrentToolIndex} unholstered");
+
+            if(!_unholsterCurrentTool)
+            {
+                Tools[CurrentToolIndex].Holster();
+                Debug.Log($"[CharacterToolsHandler] SetCurrentTool: Tool ({Tools[CurrentToolIndex].ToolName}) at index {CurrentToolIndex} reholstered due to current tool unholster setting");
+            }
 
             OnToolsUpdate?.Invoke(CurrentToolIndex, Tools);
         }

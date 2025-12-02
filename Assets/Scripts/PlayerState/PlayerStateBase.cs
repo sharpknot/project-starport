@@ -1,5 +1,6 @@
 using UnityEngine;
 using Starport.Characters;
+using Unity.Netcode.Components;
 
 namespace Starport.PlayerState
 {
@@ -14,6 +15,7 @@ namespace Starport.PlayerState
         protected CharacterInteractableController InteractableController { get; private set; }
         protected CharacterFixableController FixableController { get; private set; }
         protected CharacterToolsHandler ToolsHandler { get; private set; }
+        protected NetworkTransform NetworkTransform { get; private set; }
         public virtual void EnterState(PlayerStateManager stateManager)
         {
             StateManager = stateManager;
@@ -27,6 +29,8 @@ namespace Starport.PlayerState
                 InteractableController = StateManager.InteractableController;
                 FixableController = StateManager.FixableController;
                 ToolsHandler = StateManager.ToolsHandler;
+
+                NetworkTransform = StateManager.GetComponent<NetworkTransform>();
             }
         }
 
