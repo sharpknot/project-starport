@@ -15,5 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Preloader.unity
     guid: 63ff0d2f77382e14180f66f020499960
   m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: e04501ef322a95f44aff4512b4eae742, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2a4b3c4eea8b71b4c9941133a1d6e064, type: 3}
   m_UseUCBPForAssetBundles: 0
