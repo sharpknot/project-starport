@@ -106,7 +106,7 @@ namespace Starport
                 if(d == null) continue;
                 if (!d.ShowDescription) continue;
 
-                if(closest == null || closestDistance < hit.distance)
+                if(closest == null || hit.distance < closestDistance)
                 {
                     closestDistance = hit.distance;
                     closest = d;

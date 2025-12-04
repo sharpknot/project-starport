@@ -789,10 +789,10 @@ MonoBehaviour:
   _parentNetworkObject: {fileID: 2774360583928067535}
   _detectionLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 465
   _blockingLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 465
   _nonDetectables:
   - {fileID: 5602880207889552802}
   <CurrentDescriptionController>k__BackingField: {fileID: 0}

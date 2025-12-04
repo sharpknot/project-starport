@@ -87,6 +87,7 @@ namespace Starport.Subsystems
             if (IsCurrentlyActive == currentlyActive) return;
 
             IsCurrentlyActive = currentlyActive;
+            Debug.Log($"[SubsystemBase {gameObject.name}] Activation update: local ({IsLocallyActive.Value}), global ({IsCurrentlyActive})");
 
             if (IsCurrentlyActive) OnActivated?.Invoke();
             else OnDeactivated?.Invoke();
