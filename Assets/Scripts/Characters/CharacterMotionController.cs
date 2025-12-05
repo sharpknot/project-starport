@@ -180,6 +180,9 @@ namespace Starport.Characters
             if(_groundHit.normal == Vector3.zero)
                 return _inputLateralMotion;
 
+            if (IsOnLedge())
+                return _inputLateralMotion;
+
             Vector3 projMotion = Vector3.ProjectOnPlane(_inputLateralMotion, _groundHit.normal);
             float dotMotion = Vector3.Dot(_inputLateralMotion, _groundHit.normal);
             
@@ -193,6 +196,40 @@ namespace Starport.Characters
             // Add downward force
             projMotion += (deltaTime * deltaTime * Physics.gravity);
             return projMotion;
+        }
+
+        private bool IsOnLedge()
+        {
+            if(!IsGrounded(out RaycastHit groundContactPoint)) 
+                return true;
+
+            float additionalGroundDistance = (CharacterController.radius / Mathf.Cos(CharacterController.slopeLimit * Mathf.Deg2Rad)) - CharacterController.radius;
+            additionalGroundDistance += (CharacterController.skinWidth * 2f);
+
+            Vector3 startPos = transform.position + CharacterController.center;
+            float downDistance = (CharacterController.height * 0.5f) + additionalGroundDistance;
+
+            RaycastHit[] hits = new RaycastHit[256];
+            int hitCount = Physics.RaycastNonAlloc(startPos, Vector3.down, hits, downDistance, _groundLayer, QueryTriggerInteraction.Ignore);
+
+            if (hitCount <= 0)
+                return true;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                RaycastHit hit = hits[i];
+                if (hit.transform == null)
+                    continue;
+                if (hit.transform == transform)
+                    continue;
+
+                if (hit.normal == Vector3.zero)
+                    continue;
+
+                return false;
+            }
+
+            return true;
         }
 
         private Vector3 GetInputMotionOnUpSlope(Vector3 projectedMotion)
