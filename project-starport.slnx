@@ -2,6 +2,9 @@
   <Project Path="NaughtyAttributes.Core.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="NaughtyAttributes.Editor.csproj" />
+  <Project Path="ALINE.csproj" />
   <Project Path="NaughtyAttributes.Test.csproj" />
+  <Project Path="ALINEEditor.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="ALINEPackageToolsEditor.csproj" />
 </Solution>

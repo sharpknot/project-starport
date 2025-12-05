@@ -6,6 +6,7 @@ using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Drawing;
 
 namespace Starport
 {
@@ -27,7 +28,7 @@ namespace Starport
         private InteractableController _interactable;
         private CharacterNetworkManager _currentCharacterServer, _currentCharacterClient;
 
-        protected Transform Seat
+        public Transform Seat
         {
             get
             {
@@ -365,8 +366,10 @@ namespace Starport
 
         private void OnDrawGizmos()
         {
-            DebugExtension.DrawCapsule(Seat.position, Seat.position + (Seat.up * 2f), Color.aliceBlue, 0.5f);
-            DebugExtension.DrawArrow(Seat.position, Seat.forward * 0.5f, Color.green);
+            //DebugExtension.DrawCapsule(Seat.position, Seat.position + (Seat.up * 2f), Color.aliceBlue, 0.5f);
+            //DebugExtension.DrawArrow(Seat.position, Seat.forward * 0.5f, Color.green);
+
+            //Draw.WireCapsule(Seat.position, Seat.position + (Seat.up * 2f), 0.5f, Color.aliceBlue);
         }
     }
 }
