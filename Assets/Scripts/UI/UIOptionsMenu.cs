@@ -11,7 +11,7 @@ namespace Starport.UI
 {
     public class UIOptionsMenu : MonoBehaviour
     {
-        [SerializeField] private RectTransform _parentPanel, _confirmPanelMenu;
+        [SerializeField] private RectTransform _parentPanel, _confirmPanelMenu, _keybindTutorial;
         [SerializeField] private TMP_InputField _joinCodeField;
         [ReadOnly] public bool OpenedSubMenu = false;
 
@@ -76,6 +76,13 @@ namespace Starport.UI
 
             GameStateManager.Instance.SetNextScene(_startMenuScene);
             SceneManager.LoadSceneAsync(_preloaderScene, LoadSceneMode.Additive);
+        }
+
+        public void ToggleKeybindDisplay()
+        {
+            if(_keybindTutorial == null) return;
+
+            _keybindTutorial.gameObject.SetActive(!_keybindTutorial.gameObject.activeSelf);
         }
 
         private void HideWithoutNotification()

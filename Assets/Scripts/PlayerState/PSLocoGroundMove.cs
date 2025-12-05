@@ -41,7 +41,17 @@ namespace Starport.PlayerState
             }
 
             if(MotionController != null)
-            UpdateInputMovement(MotionController.NormalMoveSpeed, deltaTime);
+            {
+                float moveSpeed = MotionController.NormalMoveSpeed;
+                if(InputManager != null)
+                {
+                    if(InputManager.IsSprintPressed)
+                        moveSpeed = MotionController.SprintMoveSpeed;
+                }
+
+                UpdateInputMovement(moveSpeed, deltaTime);
+            }
+            
         }
 
         public override void ExitState()

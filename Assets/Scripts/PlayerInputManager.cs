@@ -67,6 +67,7 @@ namespace Starport
 
         public bool IsPrimaryPressed { get; private set; } = false;
         public bool IsSecondaryPressed { get; private set; } = false;
+        public bool IsSprintPressed {  get; private set; } = false;
 
         public Vector3 GetWorldFlatMoveDirection(Camera camera)
         {
@@ -98,7 +99,7 @@ namespace Starport
         {
             UpdateLookDelta();
             UpdateMoveInput();
-            UpdatePrimarySecondaryPressed();
+            UpdatePressed();
             UpdateCycleEquipment();
         }
 
@@ -188,18 +189,22 @@ namespace Starport
             InputActions.Main.UseTool4.performed -= OnEquipTool4;
         }
 
-        private void UpdatePrimarySecondaryPressed()
+        private void UpdatePressed()
         {
             if (InputActions == null)
             {
                 IsPrimaryPressed = false;
                 IsSecondaryPressed = false;
+                IsSprintPressed = false;
                 return;
             }
 
             IsPrimaryPressed = InputActions.Main.PrimaryAction.IsPressed();
             IsSecondaryPressed = InputActions.Main.SecondaryAction.IsPressed();
+            IsSprintPressed = InputActions.Main.SprintHold.IsPressed();
         }
+
+        
 
         private void OnJump(InputAction.CallbackContext ctx) => OnJumpInput?.Invoke();
         private void OnOptionsMenu(InputAction.CallbackContext ctx) => OnOptionsMenuInput?.Invoke();

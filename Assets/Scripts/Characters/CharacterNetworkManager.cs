@@ -29,14 +29,19 @@ namespace Starport.Characters
             {
                 StateManager.InitializeStateManager();
                 StateManager.EnableAndUseCamera();
+
+                EquipPlayerTool(_repairTool, 0);
+                EquipPlayerTool(_pickupTool, 1);
+
+                if(StateManager.ToolsHandler != null)
+                    StateManager.ToolsHandler.InvokeUpdateEvent();
             }
             else
             {
                 StateManager.DisableCamera();
             }
 
-            EquipPlayerTool(_repairTool, 0);
-            EquipPlayerTool(_pickupTool, 1);
+            
         }
 
         private void EquipPlayerTool(ToolBase tool, int index)

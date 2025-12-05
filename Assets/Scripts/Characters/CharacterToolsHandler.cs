@@ -195,5 +195,7 @@ namespace Starport.Characters
             CurrentTool.SecondaryPressedAction(deltaTime);
         }
 
+        public void InvokeUpdateEvent() => OnToolsUpdate?.Invoke(CurrentToolIndex, Tools);
+
     }
 }
