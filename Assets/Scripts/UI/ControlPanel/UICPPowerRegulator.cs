@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Starport.UI.ControlPanel
 {
-    public class UICPPowerRegulator : MonoBehaviour
+    public class UICPPowerRegulator : UIControlPanelBase
     {
         [SerializeField, Required] private PowerRegulatorSubsystem _powerRegulator;
 
@@ -20,21 +20,35 @@ namespace Starport.UI.ControlPanel
         [SerializeField, Required, BoxGroup("Slider Frequency")]
         private TMP_Text _sliderText;
 
-        private void OnEnable()
+        private void Awake()
         {
+            _powerRegulator.OnCurrentFrequencyUpdate += UpdateValues;
+
             _slider.minValue = PowerRegulatorSubsystem.LowestFrequency;
-            _slider.maxValue = PowerRegulatorSubsystem.HighestFrequency;
+            _slider.maxValue = PowerRegulatorSubsystem.HighestFrequency;            
+        }
+
+        private void OnDestroy()
+        {
+            if (_powerRegulator != null)
+                _powerRegulator.OnCurrentFrequencyUpdate -= UpdateValues;
+        }
+
+        public override void EnableUI()
+        {
+            base.EnableUI();
 
             _slider.SetValueWithoutNotify(_powerRegulator.CurrentFrequency);
             _sliderText.text = $"Current Frequency: {UIUtility.GetDecimals(_powerRegulator.CurrentFrequency)}Hz";
 
             UpdateValues(_powerRegulator.CurrentFrequency);
-            _powerRegulator.OnCurrentFrequencyUpdate += UpdateValues;
+
         }
 
-        private void OnDisable()
+        public override void DisableUI()
         {
-            _powerRegulator.OnCurrentFrequencyUpdate -= UpdateValues;
+            //_powerRegulator.OnCurrentFrequencyUpdate -= UpdateValues;
+            base.DisableUI();
         }
 
         private void UpdateValues(float currentValue)

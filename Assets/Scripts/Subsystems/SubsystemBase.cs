@@ -1,4 +1,6 @@
 using NaughtyAttributes;
+using System.Collections.Generic;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -8,91 +10,184 @@ namespace Starport.Subsystems
     [RequireComponent (typeof (NetworkObject))]
     public class SubsystemBase : NaughtyNetworkBehaviour
     {
+        [field: SerializeField]
+        public string SubsystemName { get; private set; }
+
         protected NetworkVariable<bool> IsLocallyActive = new(
             false, 
             NetworkVariableReadPermission.Everyone, 
-            NetworkVariableWritePermission.Owner
+            NetworkVariableWritePermission.Server
             );
+
+        protected NetworkVariable<float> Percent = new(
+            1f,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+            );
+
+        public float CurrentPercent => Percent.Value;
 
         [SerializeField] private SubsystemBase[] _requiredSubsystems;
 
-        [field: SerializeField, ReadOnly]
-        public bool IsCurrentlyActive { get; private set;  } = false;
+        private NetworkVariable<bool> _areAllSubsystemsActive = new(
+            false, 
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+            );
+
+        private NetworkVariable<bool> _isCurrentlyActive = new(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+            );
+
+        [SerializeField, ReadOnly]
+        private bool _debugIsCurrentlyActive, _debugIsLocallyActive;
+        public bool IsCurrentlyActive => _isCurrentlyActive.Value;
         public bool IsCurrentlyLocallyActive => IsLocallyActive.Value;
-        public event UnityAction<bool> OnCurrentlyActiveUpdate;
-        public UnityEvent OnActivated = new(), OnDeactivated = new();
+        public event UnityAction<bool> OnCurrentlyActiveUpdate, OnLocallyActiveUpdate;
+        [SerializeField, Foldout("Activation Events")]
+        private UnityEvent OnActivated = new(), OnDeactivated = new();
+        [SerializeField, Foldout("Local Activation Events")]
+        private UnityEvent OnLocallyActivated = new(), OnLocallyDeactivated = new();
+
+        public event UnityAction<float> OnPercentageUpdate;
+        [SerializeField, Foldout("Percentage Events")]
+        private UnityEvent<float> OnPercentageUpdateEvent;
+
+        List<SubsystemBase> _validSubsystems;
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            if (IsCurrentlyActive) OnActivated?.Invoke();
-            else OnDeactivated?.Invoke();
+            // Force Intial firing of events
+            UpdateLocalActive(false, false);
+            UpdateOverallActive(false, false);
 
-            OnCurrentlyActiveUpdate?.Invoke(IsCurrentlyActive);
-            IsLocallyActive.OnValueChanged += OnIsLocallyActiveValueChanged;
+            IsLocallyActive.OnValueChanged += UpdateLocalActive;
+            _isCurrentlyActive.OnValueChanged += UpdateOverallActive;
+            Percent.OnValueChanged += UpdateCurrentPercentage;
 
-            if (!IsServer) return;
-            
-            if(_requiredSubsystems != null)
-            {
-                foreach(var subsystem in _requiredSubsystems)
-                {
-                    if(subsystem == null) continue;
-                    subsystem.OnCurrentlyActiveUpdate += RequiredSubsystemActivationUpdate;
-                }
-            }
+            StartCoroutine(InitializeAsServer());
+
+        }
+
+        protected virtual void Update()
+        {
+            _debugIsCurrentlyActive = IsCurrentlyActive;
+            _debugIsLocallyActive = IsCurrentlyLocallyActive;
         }
 
         public override void OnNetworkDespawn()
         {
-            if (_requiredSubsystems != null)
+            StopAllCoroutines();
+
+            IsLocallyActive.OnValueChanged -= UpdateLocalActive;
+            _isCurrentlyActive.OnValueChanged -= UpdateOverallActive;
+            Percent.OnValueChanged -= UpdateCurrentPercentage;
+
+            if (_validSubsystems != null)
             {
-                foreach (var subsystem in _requiredSubsystems)
+                foreach(var  subsystem in _validSubsystems)
                 {
-                    if (subsystem == null) continue;
-                    subsystem.OnCurrentlyActiveUpdate -= RequiredSubsystemActivationUpdate;
+                    if(subsystem == null) continue;
+                    subsystem.OnCurrentlyActiveUpdate -= SubsystemActivationUpdate;
                 }
             }
 
-            IsLocallyActive.OnValueChanged -= OnIsLocallyActiveValueChanged;
             base.OnNetworkDespawn();
         }
 
-        private void OnIsLocallyActiveValueChanged(bool prev, bool current) => UpdateCurrentlyActiveFlag();
-
-        private void RequiredSubsystemActivationUpdate(bool subsystemActive) => UpdateCurrentlyActiveFlag();
-
-        private void UpdateCurrentlyActiveFlag()
+        private void UpdateLocalActive(bool prev, bool current)
         {
-            if(_requiredSubsystems != null)
-            {
-                foreach(var subsystem in _requiredSubsystems)
-                {
-                    if(subsystem == null) continue;
-                    if (subsystem.IsCurrentlyActive) continue;
+            OnLocallyActiveUpdate?.Invoke(IsCurrentlyLocallyActive);
+            if (IsCurrentlyLocallyActive) OnLocallyActivated?.Invoke();
+            else OnLocallyDeactivated?.Invoke();
 
-                    // Inactive subsystem, fail the current
-                    SetCurrentlyActive(false);
-                    return;
-                }
-            }
-
-            // Set currently active based on local active
-            SetCurrentlyActive(IsLocallyActive.Value);
+            if(IsServer)
+                _isCurrentlyActive.Value = IsCurrentlyLocallyActive && _areAllSubsystemsActive.Value;
         }
 
-        private void SetCurrentlyActive(bool currentlyActive)
+        private void UpdateOverallActive(bool prev, bool current)
         {
-            if (IsCurrentlyActive == currentlyActive) return;
-
-            IsCurrentlyActive = currentlyActive;
-            Debug.Log($"[SubsystemBase {gameObject.name}] Activation update: local ({IsLocallyActive.Value}), global ({IsCurrentlyActive})");
-
-            if (IsCurrentlyActive) OnActivated?.Invoke();
-            else OnDeactivated?.Invoke();
-
             OnCurrentlyActiveUpdate?.Invoke(IsCurrentlyActive);
+            if(IsCurrentlyActive) OnActivated?.Invoke();
+            else OnDeactivated?.Invoke();
+        }
+
+        private void UpdateCurrentPercentage(float prev,  float current)
+        {
+            OnPercentageUpdate?.Invoke(CurrentPercent);
+            OnPercentageUpdateEvent?.Invoke(CurrentPercent);
+        }
+
+        private IEnumerator InitializeAsServer()
+        {
+            if(!IsServer) yield break;
+
+            _areAllSubsystemsActive.OnValueChanged += UpdateAllSubsystemActive;
+
+            if (_requiredSubsystems == null)
+            {
+                _areAllSubsystemsActive.Value = true;
+                yield break;
+            }
+
+            while (true)
+            {
+                bool allSpawned = true;
+                foreach (var subsystem in _requiredSubsystems)
+                {
+                    if(subsystem == null) continue;
+                    if (subsystem.NetworkObject.IsSpawned) continue;
+
+                    allSpawned = false;
+                    break;
+                }
+
+                if (allSpawned)
+                    break;
+
+                yield return null;
+            };
+
+            _validSubsystems = new();
+            foreach(var subsystem in _requiredSubsystems)
+            {
+                if(subsystem == null) continue;
+                if (_validSubsystems.Contains(subsystem))
+                    continue;
+
+                subsystem.OnCurrentlyActiveUpdate += SubsystemActivationUpdate;
+                _validSubsystems.Add(subsystem);
+            }
+
+            _areAllSubsystemsActive.Value = AllSubsystemsActive();
+        }
+
+        private void SubsystemActivationUpdate(bool active)
+        {
+            _areAllSubsystemsActive.Value = AllSubsystemsActive();
+        }
+
+        private bool AllSubsystemsActive()
+        {
+            if (_validSubsystems == null) return true;
+            foreach(var subsystem in _validSubsystems)
+            {
+                if(subsystem == null) continue;
+                if(!subsystem.IsCurrentlyActive)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void UpdateAllSubsystemActive(bool prev, bool current)
+        {
+            if (!IsServer) return;
+            _isCurrentlyActive.Value = IsCurrentlyLocallyActive && _areAllSubsystemsActive.Value;
         }
     }
 }

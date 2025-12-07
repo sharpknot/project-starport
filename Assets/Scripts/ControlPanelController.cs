@@ -1,12 +1,13 @@
 using DG.Tweening;
+using Drawing;
 using NaughtyAttributes;
 using Starport.Characters;
 using Starport.PlayerState;
+using Starport.UI.ControlPanel;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Drawing;
 
 namespace Starport
 {
@@ -39,7 +40,7 @@ namespace Starport
         }
         [SerializeField] private Transform _seat;
         [SerializeField, Required] private Transform _resetPosition;
-        [SerializeField] private Canvas _controlPanelUi;
+        [SerializeField] private UIControlPanelBase _controlPanelUi;
         [SerializeField, Required] private PlayerStateBase _playerControlPanelBaseState, _playerControlPanelLocomotionState;
         [SerializeField, Required] private CinemachineCamera _camera;
 
@@ -66,11 +67,10 @@ namespace Starport
         {
             base.OnNetworkSpawn();
 
+            EnableUI(false);
+
             _interactable.OnInteractAttemptResultServer += ServerSuccessInteract;
             _interactable.OnInteractAttemptResultClient += ClientSuccessInteract;
-
-            if (_controlPanelUi != null)
-                _controlPanelUi.gameObject.SetActive(false);
         }
 
         public override void OnNetworkDespawn()
@@ -261,7 +261,7 @@ namespace Starport
 
             if(_controlPanelUi != null)
             {
-                _controlPanelUi.gameObject.SetActive(true);
+                EnableUI(true);
                 Debug.Log($"[ControlPanelController {gameObject.name}] ClientSuccessOwnership: Enabling control panel ui {_controlPanelUi.gameObject.name}");
             }
 
@@ -314,7 +314,7 @@ namespace Starport
 
             if (_controlPanelUi != null)
             {
-                _controlPanelUi.gameObject.SetActive(false);
+                EnableUI(false);
                 Debug.Log($"[ControlPanelController {gameObject.name}] ClientResetOwner: Control panel deactivated");
             }
 
@@ -370,6 +370,14 @@ namespace Starport
             //DebugExtension.DrawArrow(Seat.position, Seat.forward * 0.5f, Color.green);
 
             //Draw.WireCapsule(Seat.position, Seat.position + (Seat.up * 2f), 0.5f, Color.aliceBlue);
+        }
+
+        private void EnableUI(bool enable)
+        {
+            if (_controlPanelUi == null) return;
+
+            if (enable) _controlPanelUi.EnableUI();
+            else _controlPanelUi.DisableUI();
         }
     }
 }

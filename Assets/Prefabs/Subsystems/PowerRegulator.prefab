@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 95405669313664466}
   - component: {fileID: 7881771615090955871}
   - component: {fileID: 5770079853790920603}
+  - component: {fileID: 4768344811096038332}
   m_Layer: 0
   m_Name: UIControlPanel
   m_TagString: Untagged
@@ -121,6 +122,18 @@ MonoBehaviour:
   _currentNormalColor: {r: 0, g: 0, b: 0, a: 1}
   _activatedColor: {r: 0, g: 0.49056602, b: 0.0013677309, a: 1}
   _sliderText: {fileID: 1708451885334522048}
+--- !u!225 &4768344811096038332
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293984479422376458}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &364238093987637659
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,8 +280,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 0.15115502, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -457,7 +470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4181680407
+  GlobalObjectIdHash: 2566962600
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 2
@@ -519,7 +532,7 @@ MonoBehaviour:
   _interactable: {fileID: 3475569288131743144}
   _seat: {fileID: 8866186643545528046}
   _resetPosition: {fileID: 8866186643545528046}
-  _controlPanelUi: {fileID: 8975290501647971337}
+  _controlPanelUi: {fileID: 5770079853790920603}
   _playerControlPanelBaseState: {fileID: 11400000, guid: 2c43a0eb49f387d488dae91e62a31f92, type: 2}
   _playerControlPanelLocomotionState: {fileID: 11400000, guid: 2663e8e5c247f1844a2629c543eede2c, type: 2}
   _camera: {fileID: 2001011950810407175}
@@ -579,8 +592,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 0.16653156, g: 1, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -749,7 +762,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1043746584
+  GlobalObjectIdHash: 2188619767
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -775,8 +788,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Starport.Subsystems.PowerRegulatorSubsystem
   ShowTopMostFoldoutHeaderGroup: 1
+  <SubsystemName>k__BackingField: Power Regulator
   _requiredSubsystems: []
-  <IsCurrentlyActive>k__BackingField: 0
+  _debugIsCurrentlyActive: 0
+  _debugIsLocallyActive: 0
   OnActivated:
     m_PersistentCalls:
       m_Calls:
@@ -831,6 +846,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  OnLocallyActivated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnLocallyDeactivated:
+    m_PersistentCalls:
+      m_Calls: []
+  OnPercentageUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
   _description: {fileID: 5548599618923970181}
   _interactable: {fileID: 3475569288131743144}
 --- !u!114 &200222262863281463
@@ -860,6 +884,9 @@ MonoBehaviour:
   _backgroundColor:
     serializedVersion: 2
     rgba: 4278190080
+  _acceptableColor:
+    serializedVersion: 2
+    rgba: 4279150633
   _amplitude: 0.45
   _scrollSpeed: 1
   _secondsPerScreen: 60
@@ -939,7 +966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1479566512
+  GlobalObjectIdHash: 1445769460
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -1126,8 +1153,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 0.16653156, g: 1, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -1479,8 +1506,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 0.15115502, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -1606,8 +1633,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 0.16653156, g: 1, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -2093,8 +2120,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 0.15115502, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -2220,8 +2247,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 0.16653156, g: 1, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}
@@ -2559,8 +2586,8 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 0.15115502, b: 0, a: 1}
-  m_Intensity: 3
-  m_Range: 5.5
+  m_Intensity: 1
+  m_Range: 1
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 10, y: 10}

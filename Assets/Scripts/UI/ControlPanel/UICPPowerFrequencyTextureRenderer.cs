@@ -13,6 +13,7 @@ namespace Starport
         [SerializeField] private Color32 _currentColor = Color.cyan;
         [SerializeField] private Color32 _matchedColor = Color.yellow;
         [SerializeField] private Color32 _backgroundColor = Color.black;
+        [SerializeField] private Color32 _acceptableColor = Color.yellow;
 
         [SerializeField, Range(0.1f, 0.49f)]
         private float _amplitude = 0.45f;
@@ -74,35 +75,69 @@ namespace Starport
         {
             Color32[] pixels = _cpuTexture.GetPixels32();
 
+            // Clear background
             for (int i = 0; i < pixels.Length; i++)
                 pixels[i] = _backgroundColor;
 
             Color liveColor = isMatched ? _matchedColor : _currentColor;
-
             float horizontalScale = 1f / Mathf.Max(0.0001f, _secondsPerScreen);
+
+            float lowerHz = targetHz - PowerRegulatorSubsystem.AcceptableRangeFrequency;
+            float upperHz = targetHz + PowerRegulatorSubsystem.AcceptableRangeFrequency;
 
             for (int x = 0; x < _width; x++)
             {
                 float t = (float)x / _width;
 
+                //
+                // Compute Y of lower and upper acceptable waves
+                //
+                float phaseLower = (t * horizontalScale * lowerHz * Mathf.PI * 2f) + _time;
+                float phaseUpper = (t * horizontalScale * upperHz * Mathf.PI * 2f) + _time;
+
+                int yLower = Mathf.RoundToInt((Mathf.Sin(phaseLower) * _amplitude + 0.5f) * _height);
+                int yUpper = Mathf.RoundToInt((Mathf.Sin(phaseUpper) * _amplitude + 0.5f) * _height);
+
+                // Ensure ordering
+                if (yLower > yUpper)
+                {
+                    int temp = yLower;
+                    yLower = yUpper;
+                    yUpper = temp;
+                }
+
+                //
+                // 1. Fill region between lower and upper acceptable frequencies
+                //
+                for (int y = yLower; y <= yUpper; y++)
+                {
+                    if (y >= 0 && y < _height)
+                        pixels[y * _width + x] = _acceptableColor;
+                }
+
+                //
+                // 2. Draw target wave
+                //
                 float phaseTarget = (t * horizontalScale * targetHz * Mathf.PI * 2f) + _time;
+                int yTarget = Mathf.RoundToInt((Mathf.Sin(phaseTarget) * _amplitude + 0.5f) * _height);
+
+                if (yTarget >= 0 && yTarget < _height)
+                    pixels[yTarget * _width + x] = _targetColor;
+
+                //
+                // 3. Draw current wave (always visible)
+                //
                 float phaseCurrent = (t * horizontalScale * currentHz * Mathf.PI * 2f) + _time;
+                int yCurrent = Mathf.RoundToInt((Mathf.Sin(phaseCurrent) * _amplitude + 0.5f) * _height);
 
-                float targetY = Mathf.Sin(phaseTarget);
-                float currentY = Mathf.Sin(phaseCurrent);
-
-                int targetPixelY = Mathf.RoundToInt((targetY * _amplitude + 0.5f) * _height);
-                int currentPixelY = Mathf.RoundToInt((currentY * _amplitude + 0.5f) * _height);
-
-                if (targetPixelY >= 0 && targetPixelY < _height)
-                    pixels[targetPixelY * _width + x] = _targetColor;
-
-                if (currentPixelY >= 0 && currentPixelY < _height)
-                    pixels[currentPixelY * _width + x] = liveColor;
+                if (yCurrent >= 0 && yCurrent < _height)
+                    pixels[yCurrent * _width + x] = liveColor;
             }
 
             _cpuTexture.SetPixels32(pixels);
             _cpuTexture.Apply(false);
         }
+
+
     }
 }

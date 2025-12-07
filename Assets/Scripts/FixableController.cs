@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
@@ -50,12 +51,19 @@ namespace Starport
         public event UnityAction<Vector3, Quaternion> OnFixPointUpdate;
         public event UnityAction<bool> OnFixableUpdate;
 
+        [SerializeField, ReadOnly] private float _debugFixAmount;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
             _isFixable.OnValueChanged += FixableUpdated;
             _fixedAmount.OnValueChanged += FixAmountUpdated;
+        }
+
+        protected virtual void Update()
+        {
+            _debugFixAmount = FixedAmount;
         }
 
         public override void OnNetworkDespawn()

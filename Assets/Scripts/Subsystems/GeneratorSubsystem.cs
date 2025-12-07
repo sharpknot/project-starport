@@ -15,7 +15,9 @@ namespace Starport.Subsystems
         private string _isActiveParam;
 
         [SerializeField] private Part _turbine, _shaft, _generator;
-        [SerializeField] private GameObject _lightsParent;
+
+        public float CurrentFixAmount => CurrentPercent;
+        public event UnityAction<float> OnCurrentFixAmountUpdate;
 
         public override void OnNetworkSpawn()
         {
@@ -23,7 +25,8 @@ namespace Starport.Subsystems
 
             StartCoroutine(InitializeServer());
             StartCoroutine(InitializeClient());
-            
+
+            OnPercentageUpdate += NetFixAmountUpdate;
         }
 
         public override void OnNetworkDespawn()
@@ -31,11 +34,13 @@ namespace Starport.Subsystems
             StopAllCoroutines();
 
             if (_turbine.Fixable != null)
-                _turbine.Fixable.OnFixAmountUpdate += FixAmountUpdate;
+                _turbine.Fixable.OnFixAmountUpdate -= FixAmountUpdate;
             if (_shaft.Fixable != null)
-                _shaft.Fixable.OnFixAmountUpdate += FixAmountUpdate;
+                _shaft.Fixable.OnFixAmountUpdate -= FixAmountUpdate;
             if (_generator.Fixable != null)
-                _generator.Fixable.OnFixAmountUpdate += FixAmountUpdate;
+                _generator.Fixable.OnFixAmountUpdate -= FixAmountUpdate;
+
+            OnPercentageUpdate -= NetFixAmountUpdate;
 
             base.OnNetworkDespawn();
         }
@@ -57,11 +62,12 @@ namespace Starport.Subsystems
             if(_animator == null) return;
             if (!IsServer) return;
 
-            _animator.SetBool(_isActiveParam, IsFullyFixed());
+            _animator.SetBool(_isActiveParam, IsFullyFixed(out _));
         }
 
-        private bool IsFullyFixed()
+        private bool IsFullyFixed(out float currentFixAmount)
         {
+            currentFixAmount = 1f;
             float fixCount = 0f;
             float netFixAmount = 0f;
 
@@ -70,7 +76,8 @@ namespace Starport.Subsystems
             AddFixAmount(_generator.Fixable, ref fixCount, ref netFixAmount);
 
             if(fixCount <= 0f) return false;
-            return (netFixAmount / fixCount) >= 1f;
+            currentFixAmount = Mathf.Clamp01(netFixAmount / fixCount);
+            return currentFixAmount >= 1f;
         }
 
         private void AddFixAmount(FixableController fixable, ref float fixCount, ref float netFixAmount)
@@ -85,13 +92,18 @@ namespace Starport.Subsystems
         { 
             UpdateDescriptions();
             UpdateAnimator();
-            UpdateLights();
 
             if (!IsServer) return;
 
-            bool totallyFixed = IsFullyFixed();
-            if(IsLocallyActive.Value != totallyFixed) 
-                IsLocallyActive.Value = totallyFixed;
+            bool totallyFixed = IsFullyFixed(out float netFixAmount);
+
+            Percent.Value = netFixAmount;
+            IsLocallyActive.Value = totallyFixed;
+        }
+
+        private void NetFixAmountUpdate(float current)
+        {
+            OnCurrentFixAmountUpdate?.Invoke(CurrentFixAmount);
         }
 
         private void UpdateDescriptions()
@@ -120,15 +132,6 @@ namespace Starport.Subsystems
             descriptionController.Description = desc;
         }
 
-        private void UpdateLights()
-        {
-            if(_lightsParent == null) return;
-
-            bool fullyFixed = IsFullyFixed();   
-            if(_lightsParent.activeSelf != fullyFixed)
-                _lightsParent.SetActive(fullyFixed);
-        }
-
         [System.Serializable]
         private struct Part
         {
@@ -151,7 +154,8 @@ namespace Starport.Subsystems
 
             UpdateAnimator();
 
-            IsLocallyActive.Value = IsFullyFixed();
+            IsLocallyActive.Value = IsFullyFixed(out float netFixAmount);
+            Percent.Value = netFixAmount;
         }
 
         private IEnumerator InitializeClient()
@@ -169,7 +173,6 @@ namespace Starport.Subsystems
                 _generator.Fixable.OnFixAmountUpdate += FixAmountUpdate;
 
             UpdateDescriptions();
-            UpdateLights();
         }
     }
 }

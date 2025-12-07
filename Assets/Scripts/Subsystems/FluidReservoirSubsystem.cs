@@ -24,14 +24,9 @@ namespace Starport.Subsystems
             NetworkVariableWritePermission.Server
             );
 
-        private NetworkVariable<float> _currentCapacity = new(
-            0f,
-            NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Server
-            );
 
         public float MinCapacity => _minCapacity.Value;
-        public float CurrentCapacity => _currentCapacity.Value;
+        public float CurrentCapacity => CurrentPercent;
         
         [SerializeField, ReadOnly]
         private float _debugShowMinCapacity = 0f;
@@ -50,9 +45,9 @@ namespace Starport.Subsystems
             _debugShowMinCapacity = _minCapacity.Value;
 
             _validSockets = GetValidSockets();
-            _currentCapacity.Value = GetCurrentCapacity();
+            Percent.Value = GetCurrentCapacity();
 
-            IsLocallyActive.Value = GetUpdatedLocallyActive(_currentCapacity.Value, _minCapacity.Value);
+            IsLocallyActive.Value = GetUpdatedLocallyActive(CurrentCapacity, _minCapacity.Value);
             OnCapacityUpdated?.Invoke(CurrentCapacity, IsCurrentlyLocallyActive);
 
             SubscribeEvents();
@@ -101,7 +96,7 @@ namespace Starport.Subsystems
             if (CurrentCapacity == curCapacity && IsCurrentlyLocallyActive == localActive)
                 return;
 
-            _currentCapacity.Value = curCapacity;
+            Percent.Value = curCapacity;
             IsLocallyActive.Value = localActive;
             OnCapacityUpdated?.Invoke(curCapacity, localActive);
 

@@ -20,11 +20,6 @@ namespace Starport.Subsystems
         [SerializeField, BoxGroup("Animator"), AnimatorParam("_animator", AnimatorControllerParameterType.Bool)]
         private string _isOpenParam;
 
-        private NetworkVariable<float> _currentEnergy = new(
-            0f, 
-            NetworkVariableReadPermission.Everyone, 
-            NetworkVariableWritePermission.Owner
-            );
         private NetworkVariable<float> _minEnergy = new(
             0f,
             NetworkVariableReadPermission.Everyone,
@@ -36,21 +31,30 @@ namespace Starport.Subsystems
             NetworkVariableWritePermission.Owner
             );
 
+        public float CurrentEnergy => Percent.Value;
+        public float MinEnergy => _minEnergy.Value;
+        public event UnityAction<float, float> OnEnergyUpdate;
+
         private static string _openEnclosureText = "Open enclosure", _closeEnclosureText = "Close enclosure";
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
             _isClosed.OnValueChanged += EnclosureUpdate;
+            OnPercentageUpdate += CurrentEnergyUpdate;
+            _minEnergy.OnValueChanged += MinEnergyUpdate;
 
             StartCoroutine(InitializeServer());
 
             EnclosureUpdate(false, false);  // Force value update
+            CurrentEnergyUpdate(0f);
         }
 
         public override void OnNetworkDespawn()
         {
             _isClosed.OnValueChanged -= EnclosureUpdate;
+            OnPercentageUpdate -= CurrentEnergyUpdate;
+            _minEnergy.OnValueChanged -= MinEnergyUpdate;
 
             if (_interactable != null)
                 _interactable.OnInteractAttemptResultServer -= ToggleEnclosure;
@@ -70,9 +74,9 @@ namespace Starport.Subsystems
                         _coreSocket.CurrentPickup.SetAllowPickup(!_isClosed.Value);
 
                     if (!_isClosed.Value)
-                        _currentEnergy.Value = 0f;
+                        Percent.Value = 0f;
                     else
-                        _currentEnergy.Value = _coreSocket.GetCurrentEnergy();
+                        Percent.Value = _coreSocket.GetCurrentEnergy();
                 }
 
                 if(_interactable != null)
@@ -87,11 +91,21 @@ namespace Starport.Subsystems
             UpdateDescription();
         }
 
+        private void CurrentEnergyUpdate(float current)
+        {
+            OnEnergyUpdate?.Invoke(CurrentEnergy, MinEnergy);
+        }
+
+        private void MinEnergyUpdate(float prev, float current)
+        {
+            OnEnergyUpdate?.Invoke(CurrentEnergy, MinEnergy);
+        }
+
         private void UpdateDescription()
         {
             if (_descriptions == null) return;
 
-            float energy = Mathf.Clamp01(_currentEnergy.Value);
+            float energy = Mathf.Clamp01(CurrentEnergy);
             float minEnergy = Mathf.Clamp01(_minEnergy.Value);
             string title = "Reactor";
             string desc = $"Heats up reactor fluid for power generation. Needs to be closed to operate." +
@@ -104,14 +118,14 @@ namespace Starport.Subsystems
             }
             else
             {
-                if(_currentEnergy.Value >= _minEnergy.Value)
+                if(CurrentEnergy >= _minEnergy.Value)
                 {
                     status = "Powered";
                 }
                 else
                 {
                     status = $"Unpowered (Not enough energy)" +
-                        $"\nCurrent Energy: {UIUtility.GetPercentage(_currentEnergy.Value)}" +
+                        $"\nCurrent Energy: {UIUtility.GetPercentage(CurrentEnergy)}" +
                         $"\nMinimum Required Energy: {UIUtility.GetPercentage(_minEnergy.Value)}";
                 }
             }
@@ -131,7 +145,7 @@ namespace Starport.Subsystems
             if(!IsServer)
                 yield break;
 
-            _currentEnergy.Value = 0f;
+            Percent.Value = 0f;
             _minEnergy.Value = 0f;
 
             if (_coreSocket == null)
@@ -155,7 +169,7 @@ namespace Starport.Subsystems
 
             _minEnergy.Value = minEnergy;
 
-            _currentEnergy.Value = _coreSocket.GetCurrentEnergy();
+            Percent.Value = _coreSocket.GetCurrentEnergy();
             OpenEnclosure(false);
         }
 
@@ -168,7 +182,7 @@ namespace Starport.Subsystems
             if(_animator  != null)
                 _animator.SetBool(_isOpenParam, open);
 
-            IsLocallyActive.Value = (_currentEnergy.Value >= _minEnergy.Value);
+            IsLocallyActive.Value = (CurrentEnergy >= _minEnergy.Value);
         }
 
         private void ToggleEnclosure(bool interactResult, CharacterNetworkManager characterNetworkManager)

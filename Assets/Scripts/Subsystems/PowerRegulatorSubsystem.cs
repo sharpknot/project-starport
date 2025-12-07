@@ -22,12 +22,13 @@ namespace Starport.Subsystems
             );
 
         public static float LowestFrequency = 60f, HighestFrequency = 240f;
+        public static float AcceptableRangeFrequency = 5f;
 
         public event UnityAction<float> OnCurrentFrequencyUpdate;
 
         public float TargetFrequency => _targetFrequency.Value;
         public float CurrentFrequency => _currentFrequency.Value;
-        public bool IsWithinTargetFrequency => Mathf.Abs(TargetFrequency - CurrentFrequency) <= 0.5f;
+        public bool IsWithinTargetFrequency => Mathf.Abs(TargetFrequency - CurrentFrequency) <= AcceptableRangeFrequency;
 
         [SerializeField] private DescriptionController _description;
         [SerializeField] private InteractableController _interactable;

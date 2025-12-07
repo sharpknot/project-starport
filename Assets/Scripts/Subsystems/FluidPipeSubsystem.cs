@@ -17,27 +17,24 @@ namespace Starport.Subsystems
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            UpdateDescription();
 
-            if (_description == null)
-                return;
-
-            OnCurrentFixAmountUpdate += UpdateDescription;
-
-            string fluidName = "Unknown fluid";
-            if (_fluid != null)
-                fluidName = _fluid.FluidName;
-
-            _description.Title = $"{fluidName} Pipe";
-            UpdateDescription(CurrentFixAmount);
+            OnCurrentFixAmountUpdate += UpdateFixAmount;
         }
 
         public override void OnNetworkDespawn()
         {
-            OnCurrentFixAmountUpdate -= UpdateDescription;
+            OnCurrentFixAmountUpdate -= UpdateFixAmount;
             base.OnNetworkDespawn();
         }
 
-        private void UpdateDescription(float currentAmount)
+        private void UpdateFixAmount(float currentAmount)
+        {
+            UpdateDescription();
+        }
+
+
+        private void UpdateDescription()
         {
             if (_description == null) return;
 
@@ -46,11 +43,12 @@ namespace Starport.Subsystems
                 fluidName = _fluid.FluidName;
 
             string status = "Status: Fixed";
-            if (currentAmount < 1f)
-                status = $"Status: Broken ({UIUtility.GetPercentage(currentAmount)})";
+            if (CurrentFixAmount < 1f)
+                status = $"Status: Broken ({UIUtility.GetPercentage(CurrentFixAmount)})";
 
             string result = $"Pipe carrying {fluidName}.\n{status}";
             _description.Description = result;
+            _description.Title = SubsystemName;
         }
 
     }

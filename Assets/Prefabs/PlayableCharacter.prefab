@@ -832,7 +832,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be134c016622ea348921210110fa6bc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _toolCount: 5
+  _toolCount: 2
   <ToolHoldPosition>k__BackingField: {fileID: 8225586800100560949}
   <CurrentToolIndex>k__BackingField: 0
 --- !u!4 &5602880207889552802 stripped

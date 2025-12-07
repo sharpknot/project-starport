@@ -20,43 +20,45 @@ namespace Starport.Subsystems
         [SerializeField, BoxGroup("Fixable Params"), MinMaxSlider(0f, 0.99f)]
         private Vector2 _brokenRange = new(0f, 0.5f);
 
-        protected float CurrentFixAmount
-        {
-            get
-            {
-                if (!NetworkObject.IsSpawned) return 0f;
-                return _currentFixAmount.Value;
-            }
-        }
+        [SerializeField, ReadOnly] private float _debugCurrentFixAmount;
+        public float CurrentFixAmount => Percent.Value;
 
-        private NetworkVariable<float> _currentFixAmount = new(
-            0f, 
-            NetworkVariableReadPermission.Everyone, 
-            NetworkVariableWritePermission.Server
-            );
 
-        protected event UnityAction<float> OnCurrentFixAmountUpdate;
+        public event UnityAction<float> OnCurrentFixAmountUpdate;
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            InitializeFixValues();
-            SubscribeServerEvents();
+            StartCoroutine(ServerInitialization());
 
-            _currentFixAmount.OnValueChanged += OnFixAmountUpdate;
+           OnPercentageUpdate += OnFixAmountUpdate;
         }
 
         public override void OnNetworkDespawn()
         {
-            _currentFixAmount.OnValueChanged -= OnFixAmountUpdate;
+            StopAllCoroutines();
+
+            OnPercentageUpdate -= OnFixAmountUpdate;
             UnsubscribeServerEvents();
+
+
             base.OnNetworkDespawn();
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            _debugCurrentFixAmount = CurrentFixAmount;
         }
 
         private void InitializeFixValues()
         {
             if (!IsServer) return;
-            if(_fixable == null) return;
+            if(_fixable == null)
+            {
+                IsLocallyActive.Value = true;
+                return;
+            }
 
             _fixable.IsFixable = true;
 
@@ -82,7 +84,9 @@ namespace Starport.Subsystems
             }
 
             _fixable.FixedAmount = fixedVal;
-            _currentFixAmount.Value = fixedVal;
+            Percent.Value = fixedVal;
+
+            IsLocallyActive.Value = CurrentFixAmount >= 1f;
 
         }
 
@@ -105,13 +109,28 @@ namespace Starport.Subsystems
         {
             if (!IsServer) return;
 
-            if (amount == _currentFixAmount.Value) return;
-            _currentFixAmount.Value = amount;
+            if (amount == Percent.Value) return;
+            Percent.Value = amount;
         }
 
-        private void OnFixAmountUpdate(float prev, float current)
+        private void OnFixAmountUpdate(float current)
         {
             OnCurrentFixAmountUpdate?.Invoke(CurrentFixAmount);
+
+            if (IsServer)
+                IsLocallyActive.Value = CurrentFixAmount >= 1f;
+        }
+
+        private IEnumerator ServerInitialization()
+        {
+            if(_fixable == null)
+                yield break;
+
+            while(!_fixable.NetworkObject.IsSpawned)
+                yield return null;
+
+            InitializeFixValues();
+            SubscribeServerEvents();
         }
     }
 }

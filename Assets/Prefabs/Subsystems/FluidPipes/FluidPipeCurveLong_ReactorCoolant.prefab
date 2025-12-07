@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 663950442057625282, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: m_Name
-      value: FluidPipeCurveLongBase_ReactorCoolant
+      value: FluidPipeCurveLong_ReactorCoolant
       objectReference: {fileID: 0}
     - target: {fileID: 704302644573455418, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1704656106825591978, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1881469517
+      value: 1665108464
       objectReference: {fileID: 0}
     - target: {fileID: 2824616167815223096, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: _fluid
@@ -62,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: bfb3ef7d9af7bd349841967ad636f98f, type: 2}
     - target: {fileID: 3402883777195780895, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1507676031
+      value: 2447135411
       objectReference: {fileID: 0}
     - target: {fileID: 5244267028669577426, guid: d96f1f65fa6ab1c4f8980a058a40f42e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
