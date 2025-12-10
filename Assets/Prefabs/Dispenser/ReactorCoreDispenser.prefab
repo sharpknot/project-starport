@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3196034980244138457
+--- !u!1001 &6852076421334971957
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,19 +10,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1252968670841594307, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: m_Name
-      value: ReactorCoolantDispenser
+      value: ReactorCoreDispenser
       objectReference: {fileID: 0}
     - target: {fileID: 2966731671773420506, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3996982113
+      value: 2176271523
       objectReference: {fileID: 0}
     - target: {fileID: 3521399802352845655, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3787177954
+      value: 91846941
       objectReference: {fileID: 0}
     - target: {fileID: 4777951148544804140, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: m_text
-      value: Reactor coolant canister spawner
+      value: Reactor core spawner
       objectReference: {fileID: 0}
     - target: {fileID: 8000958007480807678, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -67,10 +67,14 @@ PrefabInstance:
     - target: {fileID: 9013984893103553167, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: _pickupToSpawn
       value: 
-      objectReference: {fileID: 5930324541805238760, guid: d44d63ff32246744aaf289b390f5c2c9, type: 3}
+      objectReference: {fileID: 4917004213254048078, guid: 57a88fc17d57035419b0c33c8f0a66d1, type: 3}
     - target: {fileID: 9013984893103553167, guid: 0a0df50b349176f498527739da5567c2, type: 3}
       propertyPath: _interactDescription
-      value: Dispense reactor coolant canisters
+      value: Spawn Reactor Core
+      objectReference: {fileID: 0}
+    - target: {fileID: 9013984893103553167, guid: 0a0df50b349176f498527739da5567c2, type: 3}
+      propertyPath: <SpawnableLimit>k__BackingField
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

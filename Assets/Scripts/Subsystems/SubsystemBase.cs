@@ -55,6 +55,14 @@ namespace Starport.Subsystems
         [SerializeField, Foldout("Percentage Events")]
         private UnityEvent<float> OnPercentageUpdateEvent;
 
+        [SerializeField] private List<GameObject> _hideableInitializedObjects;
+
+        protected NetworkVariable<bool> ShowInitializableObjects = new(
+            false,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+            );
+
         List<SubsystemBase> _validSubsystems;
 
         public override void OnNetworkSpawn()
@@ -71,12 +79,33 @@ namespace Starport.Subsystems
 
             StartCoroutine(InitializeAsServer());
 
+            ShowInitializableObjectsToggle(ShowInitializableObjects.Value);
+            ShowInitializableObjects.OnValueChanged += ShowInitializableObjectsUpdate;
+
         }
 
         protected virtual void Update()
         {
             _debugIsCurrentlyActive = IsCurrentlyActive;
             _debugIsLocallyActive = IsCurrentlyLocallyActive;
+        }
+
+        protected virtual void OnValidate()
+        {
+            
+            if (_hideableInitializedObjects != null)
+            {
+                for (int i = 0; i < _hideableInitializedObjects.Count; i++)
+                {
+                    GameObject obj = _hideableInitializedObjects[i];
+                    if (obj == null) continue;
+                    NetworkObject[] netObjs = obj.GetComponentsInChildren<NetworkObject>(true);
+                    if (netObjs == null || netObjs.Length == 0) continue;
+
+                    _hideableInitializedObjects[i] = null;
+                }
+            }
+            
         }
 
         public override void OnNetworkDespawn()
@@ -86,6 +115,7 @@ namespace Starport.Subsystems
             IsLocallyActive.OnValueChanged -= UpdateLocalActive;
             _isCurrentlyActive.OnValueChanged -= UpdateOverallActive;
             Percent.OnValueChanged -= UpdateCurrentPercentage;
+            ShowInitializableObjects.OnValueChanged -= ShowInitializableObjectsUpdate;
 
             if (_validSubsystems != null)
             {
@@ -97,6 +127,18 @@ namespace Starport.Subsystems
             }
 
             base.OnNetworkDespawn();
+        }
+
+        public virtual void InitializeSubSystem(float completionAmount = 1f)
+        {
+            if (IsServer)
+                ShowInitializableObjects.Value = true;
+        }
+
+        public virtual void Deinitialize()
+        {
+            if (IsServer)
+                ShowInitializableObjects.Value = false;
         }
 
         private void UpdateLocalActive(bool prev, bool current)
@@ -188,6 +230,22 @@ namespace Starport.Subsystems
         {
             if (!IsServer) return;
             _isCurrentlyActive.Value = IsCurrentlyLocallyActive && _areAllSubsystemsActive.Value;
+        }
+
+        protected virtual void ShowInitializableObjectsUpdate(bool prev, bool current)
+        {
+            ShowInitializableObjectsToggle(ShowInitializableObjects.Value);
+        }
+
+        private void ShowInitializableObjectsToggle(bool show)
+        {
+            Debug.Log($"[ShowInitializableObjectsToggle {gameObject.name}] {show}");
+            if (_hideableInitializedObjects == null) return;
+            foreach (var obj in _hideableInitializedObjects)
+            {
+                if (obj == null) continue;
+                obj.SetActive(show);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 using NaughtyAttributes;
+using System.Collections.Generic;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,6 +34,8 @@ namespace Starport.Subsystems
         [SerializeField] private DescriptionController _description;
         [SerializeField] private InteractableController _interactable;
 
+        public RenderTexture FrequencyRender;
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -41,7 +44,7 @@ namespace Starport.Subsystems
             
             if (IsServer)
             {
-                _targetFrequency.Value = Random.Range(LowestFrequency, HighestFrequency);
+                
                 _currentFrequency.Value = Random.Range(LowestFrequency, HighestFrequency);
 
                 IsLocallyActive.Value = IsWithinTargetFrequency;
@@ -62,6 +65,36 @@ namespace Starport.Subsystems
             if (!IsSpawned) return;
 
             SetCurrentFrequencyRpc(frequency);
+        }
+
+        public override void InitializeSubSystem(float completionAmount = 1)
+        {
+            base.InitializeSubSystem(completionAmount);
+            if (!IsServer) return;
+
+            _targetFrequency.Value = Random.Range(LowestFrequency, HighestFrequency);
+            if(completionAmount >= 1f)
+            {
+                float final = Random.Range(TargetFrequency - AcceptableRangeFrequency, TargetFrequency + AcceptableRangeFrequency);
+                final = Mathf.Clamp(final, LowestFrequency, HighestFrequency);
+                _currentFrequency.Value = final;
+                return;
+            }
+
+            List<float> potentials = new()
+            {
+                Random.Range(LowestFrequency, TargetFrequency - AcceptableRangeFrequency),
+                Random.Range(TargetFrequency + AcceptableRangeFrequency, HighestFrequency)
+            };
+
+            potentials.RemoveAll(p => Mathf.Abs(p - TargetFrequency) <= AcceptableRangeFrequency);
+            if(potentials.Count<= 0)
+            {
+                _currentFrequency.Value = Random.Range(LowestFrequency, HighestFrequency);
+                return;
+            }
+
+            _currentFrequency.Value = potentials[Random.Range(0, potentials.Count)];
         }
 
         [Rpc(SendTo.Server)]

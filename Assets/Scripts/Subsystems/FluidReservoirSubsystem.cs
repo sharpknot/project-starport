@@ -41,9 +41,6 @@ namespace Starport.Subsystems
 
             if (!IsServer) return;
 
-            _minCapacity.Value = GetMinCapacity();
-            _debugShowMinCapacity = _minCapacity.Value;
-
             _validSockets = GetValidSockets();
             Percent.Value = GetCurrentCapacity();
 
@@ -57,6 +54,63 @@ namespace Starport.Subsystems
         {
             UnsubscribeEvents();
             base.OnNetworkDespawn();
+        }
+
+        public override void InitializeSubSystem(float completionAmount = 1)
+        {
+            base.InitializeSubSystem(completionAmount);
+
+            List<FluidSocketController> sockets = new(GetValidSockets());
+            sockets.RemoveAll(s => s == null || !s.NetworkObject.IsSpawned);
+
+            foreach (var socket in sockets)
+            {
+                if (!socket.NetworkObject.IsSpawned)
+                    continue;
+                socket.ClearSocket();
+            }
+
+            Percent.Value = 0f;
+            _minCapacity.Value = GetMinCapacity();
+            _debugShowMinCapacity = _minCapacity.Value;
+
+            float targetNetAmount = Mathf.Clamp01(Random.Range(_minCapacity.Value, 1f)) * sockets.Count;
+            if(completionAmount < 1f)
+            {
+                targetNetAmount = Mathf.Clamp01(Random.Range(0f, _minCapacity.Value * completionAmount)) * sockets.Count;
+            }
+
+            while (sockets.Count>0)
+            {
+                int index = Random.Range(0, sockets.Count);
+                var socket = sockets[index];
+                sockets.RemoveAt(index);
+
+                if(targetNetAmount <= 0f)
+                {
+                    bool spawn = Random.Range(0f, 1f) > 0.5f;
+                    if (spawn)
+                        socket.SpawnPickupInSocket(0f);
+                    continue;
+                }
+
+                float cap = Random.Range(0f, 1f);
+                targetNetAmount -= cap;
+                socket.SpawnPickupInSocket(cap);
+            }
+        }
+
+        public override void Deinitialize()
+        {
+            base.Deinitialize();
+            if (!IsServer) return;
+
+            foreach(var socket in GetValidSockets())
+            {
+                if (!socket.NetworkObject.IsSpawned)
+                    continue;
+                socket.ClearSocket();
+            }
         }
 
         private float GetMinCapacity()

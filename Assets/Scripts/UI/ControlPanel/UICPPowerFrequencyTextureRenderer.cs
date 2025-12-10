@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using Starport.Subsystems;
 using UnityEngine;
 
@@ -5,7 +6,8 @@ namespace Starport
 {
     public class UICPPowerFrequencyTextureRenderer : MonoBehaviour
     {
-        public RenderTexture RenderTextureOutput;
+        [field: SerializeField, ReadOnly]
+        public RenderTexture RenderTextureOutput { get; private set; }
         [SerializeField] private int _width = 512;
         [SerializeField] private int _height = 256;
 
@@ -35,20 +37,14 @@ namespace Starport
             _cpuTexture.wrapMode = TextureWrapMode.Clamp;
 
             // Create or resize RenderTexture if needed
-            if (RenderTextureOutput == null)
+            RenderTextureOutput = new RenderTexture(_width, _height, 0, RenderTextureFormat.ARGB32)
             {
-                RenderTextureOutput = new RenderTexture(_width, _height, 0, RenderTextureFormat.ARGB32);
-            }
-            else if (RenderTextureOutput.width != _width || RenderTextureOutput.height != _height)
-            {
-                RenderTextureOutput.Release();
-                RenderTextureOutput.width = _width;
-                RenderTextureOutput.height = _height;
-            }
-
-            RenderTextureOutput.filterMode = FilterMode.Point;
-            RenderTextureOutput.wrapMode = TextureWrapMode.Clamp;
+                filterMode = FilterMode.Point,
+                wrapMode = TextureWrapMode.Clamp
+            };
             RenderTextureOutput.Create();
+
+            _power.FrequencyRender = RenderTextureOutput;
         }
 
         void Update()

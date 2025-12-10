@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3654976564
+  GlobalObjectIdHash: 2633550999
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -256,6 +256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Starport.Subsystems.GeneratorSubsystem
   ShowTopMostFoldoutHeaderGroup: 1
+  <SubsystemName>k__BackingField: 
   _requiredSubsystems: []
   _debugIsCurrentlyActive: 0
   _debugIsLocallyActive: 0
@@ -319,6 +320,10 @@ MonoBehaviour:
   OnLocallyDeactivated:
     m_PersistentCalls:
       m_Calls: []
+  OnPercentageUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _hideableInitializedObjects: []
   _animator: {fileID: 4356053931503779207}
   _isActiveParam: isActive
   _turbine:

@@ -3,14 +3,13 @@ using Starport.Pickups;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
+using static UnityEditor.Experimental.GraphView.Port;
 using static UnityEngine.Rendering.DebugUI;
 
 namespace Starport.Sockets
 {
     public class ReactorCoreSocketController : SocketBaseController
     {
-        [SerializeField] private bool _randomizeInitialEnergy = true;
-
         private NetworkVariable<float> _energy = new(
             0f,
             NetworkVariableReadPermission.Everyone,
@@ -45,27 +44,6 @@ namespace Starport.Sockets
             return null;
         }
 
-        protected override PickupController SpawnInitialPickup()
-        {
-            if(!IsServer) return null;
-            if(DefaultPickup == null) return null;
-
-            ReactorCore core = DefaultPickup as ReactorCore;
-            if(core == null) return null;
-
-            GameObject g = Instantiate(DefaultPickup.gameObject, transform.position, Quaternion.identity);
-            ReactorCore p = g.GetComponent<ReactorCore>();
-            p.NetworkObject.Spawn();
-
-            float capacity = 1f;
-            if (_randomizeInitialEnergy)
-                capacity = Random.Range(0f, 1f);
-
-            p.SetCurrentEnergy(capacity);           
-
-            return p;
-        }
-
         protected override void SocketFilled()
         {
             base.SocketFilled();
@@ -96,6 +74,30 @@ namespace Starport.Sockets
             SetCurrentEnergy(0f);
         }
 
+        public override void SpawnPickupInSocket(float percent)
+        {
+            base.SpawnPickupInSocket(percent);
+
+            if (!IsServer) return;
+            if (CurrentPickup != null)
+                return;
+
+            ReactorCore pc = SpawnReactorCore();
+            if (pc == null) return;
+
+            pc.SetCurrentEnergy(Mathf.Clamp01(percent));
+            SetCurrentEnergy(percent);
+        }
+
+        public override void ClearSocket()
+        {
+            base.ClearSocket();
+
+            if (!IsServer) return;
+            _energy.Value = 0f;
+
+        }
+
         private void Awake()
         {
             OnCurrentEnergyUpdate += UpdateEnergyValue;
@@ -109,6 +111,27 @@ namespace Starport.Sockets
         private void UpdateEnergyValue(float value)
         {
             Debug.Log($"[ReactorCoreSocketController] current energy value {value}");
+        }
+
+        private ReactorCore SpawnReactorCore()
+        {
+            ReactorCore canister = GetValidReactorCore(DefaultPickup);
+            if (canister == null) return null;
+
+            GameObject g = Instantiate(canister.gameObject, transform.position, Quaternion.identity);
+            ReactorCore p = g.GetComponent<ReactorCore>();
+            p.NetworkObject.Spawn();
+
+            return p;
+        }
+
+        private ReactorCore GetValidReactorCore(PickupController potentialPickup)
+        {
+            if (potentialPickup == null) return null;
+
+            ReactorCore c = potentialPickup as ReactorCore;
+            if (c == null) return null;
+            return c;
         }
     }
 }

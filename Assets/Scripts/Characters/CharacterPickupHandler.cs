@@ -83,6 +83,7 @@ namespace Starport.Characters
                 return;
             }
 
+            IgnoreCollision(CurrentPickup, false);
             CurrentPickup.ThrowPickup(_pickupOriginReference.forward * _throwForce);
             Debug.Log($"[CharacterPickupHandler] Pickup {CurrentPickup.gameObject.name} thrown!");
 
@@ -100,6 +101,7 @@ namespace Starport.Characters
 
             KillToPlayerProcess();
 
+            IgnoreCollision(CurrentPickup, false);
             CurrentPickup.ReleasePickup();
             Debug.Log($"[CharacterPickupHandler] Pickup {CurrentPickup.gameObject.name} dropped!");
             SetCurrentPickup(null);            
@@ -235,6 +237,8 @@ namespace Starport.Characters
             KillToPlayerProcess();
             _toPlayerProcess = ToPlayerProcess();
             StartCoroutine(_toPlayerProcess);
+
+            IgnoreCollision(CurrentPickup, true);
         }
 
         private void KillPickupAttemptSequence()
@@ -333,6 +337,19 @@ namespace Starport.Characters
             Vector3 projToHold = Vector3.ProjectOnPlane(pickToHold, transform.up);
 
             return Vector3.Dot(projToPlayer, projToHold) <= 0f;
+        }
+
+        private void IgnoreCollision(PickupController pickup, bool ignore)
+        {
+            if(pickup == null) return;
+
+            Collider pickupCollider = pickup.GetComponent<Collider>();
+            if(pickupCollider == null) return;
+
+            Collider characterCollider = GetComponent<Collider>();
+            if(characterCollider == null) return;
+
+            Physics.IgnoreCollision(pickupCollider, characterCollider,ignore);
         }
     }
 }

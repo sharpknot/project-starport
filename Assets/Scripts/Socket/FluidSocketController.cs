@@ -12,7 +12,7 @@ namespace Starport.Sockets
         public Fluid FluidType { get; private set; }
 
         public event UnityAction<FluidCanister, float> OnCanisterSocketUpdate;
-        [SerializeField] bool _randomizeInitialCapacity = true;
+
         public bool HasCanister(out float capacity)
         {
             capacity = 0f;
@@ -33,25 +33,6 @@ namespace Starport.Sockets
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Server
             );
-
-        protected override PickupController SpawnInitialPickup()
-        {
-            FluidCanister canister = GetValidCanister(DefaultPickup);
-            if(canister == null) return null;
-
-            GameObject g = Instantiate(canister.gameObject, transform.position, Quaternion.identity);
-            PickupController p = g.GetComponent<PickupController>();
-            p.NetworkObject.Spawn();
-
-            if(_randomizeInitialCapacity)
-            {
-                FluidCanister c = p as FluidCanister;
-                if (c != null)
-                    c.SetCurrentCapacity(Random.Range(0f, 1f));
-            }
-
-            return p;
-        }
 
         protected override PickupController GetValidPickup(PickupController[] potentialSocketables)
         {
@@ -109,6 +90,42 @@ namespace Starport.Sockets
             _capacity.Value = currentCapacity;
 
             OnCanisterSocketUpdate?.Invoke(c, currentCapacity);
+        }
+
+        public override void SpawnPickupInSocket(float percent)
+        {
+            base.SpawnPickupInSocket(percent);
+
+            if (!IsServer) return;
+            if (CurrentPickup != null)
+                return;
+
+            FluidCanister pc = SpawnFluidCanister();
+            if(pc == null) return;
+
+            pc.SetCurrentCapacity(Mathf.Clamp01(percent));
+        }
+
+        public override void ClearSocket()
+        {
+            base.ClearSocket();
+
+            if (!IsServer) return;
+            _hasCanister.Value = false;
+            _capacity.Value = 0f;
+            
+        }
+
+        private FluidCanister SpawnFluidCanister()
+        {
+            FluidCanister canister = GetValidCanister(DefaultPickup);
+            if (canister == null) return null;
+
+            GameObject g = Instantiate(canister.gameObject, transform.position, Quaternion.identity);
+            FluidCanister p = g.GetComponent<FluidCanister>();
+            p.NetworkObject.Spawn();
+
+            return p;
         }
     }
 }

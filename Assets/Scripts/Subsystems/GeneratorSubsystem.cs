@@ -45,17 +45,47 @@ namespace Starport.Subsystems
             base.OnNetworkDespawn();
         }
 
-        private void SetInitialRepairState(FixableController fixable)
+        public override void InitializeSubSystem(float completionAmount = 1)
         {
-            if (fixable == null) return;
-            if(Random.Range(0, 1f) > 0.5f)
+            base.InitializeSubSystem(completionAmount);
+
+            if (!IsServer) return;
+
+            List<FixableController> fixables = new()
             {
-                fixable.FixedAmount = 1f;
+                _turbine.Fixable,
+                _shaft.Fixable,
+                _generator.Fixable,
+            };
+
+            fixables.RemoveAll(f => f == null || !f.NetworkObject.IsSpawned);
+            if (fixables.Count <= 0) return;
+
+            if(completionAmount >= 1f)
+            {
+                foreach(var f in fixables)
+                {
+                    f.FixedAmount = 1f;
+                }
+
                 return;
             }
 
-            fixable.FixedAmount = Random.Range(0, 1f);
+            float netFixAmt = completionAmount * fixables.Count;
+            foreach(var f in fixables)
+            {
+                float curFixAmt = Mathf.Clamp01(Random.Range(0f, netFixAmt));
+                netFixAmt -= curFixAmt;
+
+                f.FixedAmount = curFixAmt;
+            }
         }
+
+        public override void Deinitialize()
+        {
+            base.Deinitialize();
+        }
+
 
         private void UpdateAnimator()
         {
@@ -147,10 +177,6 @@ namespace Starport.Subsystems
             {
                 yield return null;
             }
-
-            SetInitialRepairState(_turbine.Fixable);
-            SetInitialRepairState(_shaft.Fixable);
-            SetInitialRepairState(_generator.Fixable);
 
             UpdateAnimator();
 

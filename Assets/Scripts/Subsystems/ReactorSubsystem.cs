@@ -63,7 +63,45 @@ namespace Starport.Subsystems
 
             base.OnNetworkDespawn();
         }
-        
+
+        public override void InitializeSubSystem(float completionAmount = 1)
+        {
+            base.InitializeSubSystem(completionAmount);
+
+            if (!IsServer) return;
+            if (_coreSocket == null || !_coreSocket.NetworkObject.IsSpawned) return;
+            _coreSocket.ClearSocket();
+
+            float minEnergy = 0f;
+            if (_randomizeMinEnergy)
+                minEnergy = Random.Range(0f, 1f);
+            _minEnergy.Value = minEnergy;
+            Percent.Value = 0f;
+
+            float finalEnergy = Random.Range(_minEnergy.Value, 1f);
+            if(completionAmount < 1f)
+                finalEnergy = Random.Range(0f, _minEnergy.Value);
+
+            
+            _coreSocket.SpawnPickupInSocket(finalEnergy);
+            Percent.Value = _coreSocket.GetCurrentEnergy();
+
+            OpenEnclosure(false);
+            EnclosureUpdate(false, false);  // Force value update
+            CurrentEnergyUpdate(0f);
+        }
+
+        public override void Deinitialize()
+        {
+            base.Deinitialize();
+            if (!IsServer) return;
+            if(_coreSocket == null) return;
+
+            _coreSocket.ClearSocket();
+
+            Percent.Value = 0f;
+        }
+
         private void EnclosureUpdate(bool prev, bool current)
         {
             if (IsServer)

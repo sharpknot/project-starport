@@ -11,6 +11,7 @@ namespace Starport.UI.ControlPanel
         [SerializeField, Required] private PowerRegulatorSubsystem _powerRegulator;
 
         [SerializeField, Required] private Slider _slider;
+        [SerializeField, Required] private RawImage _frequencyRawImage;
 
         [SerializeField, Required, BoxGroup("Current Frequency")] 
         private TMP_Text _currentText;
@@ -42,7 +43,7 @@ namespace Starport.UI.ControlPanel
             _sliderText.text = $"Current Frequency: {UIUtility.GetDecimals(_powerRegulator.CurrentFrequency)}Hz";
 
             UpdateValues(_powerRegulator.CurrentFrequency);
-
+            UpdateTexture();
         }
 
         public override void DisableUI()
@@ -58,6 +59,15 @@ namespace Starport.UI.ControlPanel
             Color c = _currentNormalColor;
             if (_powerRegulator.IsWithinTargetFrequency) c = _activatedColor;
             _currentText.color = c;
+        }
+
+        private void UpdateTexture()
+        {
+            if (_powerRegulator == null) return;
+            if (_frequencyRawImage == null) return;
+
+            if(_frequencyRawImage.texture != _powerRegulator.FrequencyRender)
+                _frequencyRawImage.texture = _powerRegulator.FrequencyRender;
         }
 
         public void SetCurrentFrequency(float frequency)

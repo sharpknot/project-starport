@@ -2,7 +2,6 @@ using NaughtyAttributes;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.Port;
 
 namespace Starport.Pickups
 {
@@ -47,8 +46,9 @@ namespace Starport.Pickups
             base.OnNetworkDespawn();
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
             float deltaTime = Time.deltaTime;
             UpdateCoreRotation(deltaTime);
         }

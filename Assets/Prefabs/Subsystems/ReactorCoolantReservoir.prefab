@@ -1119,7 +1119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3594840091
+  GlobalObjectIdHash: 1396977367
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -1209,6 +1209,12 @@ MonoBehaviour:
   OnLocallyDeactivated:
     m_PersistentCalls:
       m_Calls: []
+  OnPercentageUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _hideableInitializedObjects:
+  - {fileID: 6447880941875681038}
+  - {fileID: 7295675024461652809}
   <FluidType>k__BackingField: {fileID: 11400000, guid: bfb3ef7d9af7bd349841967ad636f98f, type: 2}
   _fluidSockets:
   - {fileID: 8330500147644129976}
@@ -2067,7 +2073,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 1872951001
+      value: 3327841230
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -2210,7 +2216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 799731952
+      value: 1957665446
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -2353,7 +2359,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 3121740278
+      value: 57484280
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
@@ -2504,7 +2510,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: GlobalObjectIdHash
-      value: 195604957
+      value: 3932945732
       objectReference: {fileID: 0}
     - target: {fileID: 5101014851564669384, guid: 5965ccfdca7bec0449be320306c648ed, type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash

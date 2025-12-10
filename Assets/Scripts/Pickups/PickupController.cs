@@ -94,6 +94,11 @@ namespace Starport.Pickups
             base.OnDestroy();
         }
 
+        protected virtual void Update()
+        {
+
+        }
+
         private void SubscribeOwnershipEvents()
         {
             UnsubscribeOwnershipEvents();

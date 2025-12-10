@@ -510,7 +510,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4022589944
+  GlobalObjectIdHash: 2986482490
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -683,6 +683,15 @@ MonoBehaviour:
   OnLocallyDeactivated:
     m_PersistentCalls:
       m_Calls: []
+  OnPercentageUpdateEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  _hideableInitializedObjects:
+  - {fileID: 4421225407820923176}
+  - {fileID: 2430984669280229712}
+  - {fileID: 8236747026531431502}
+  - {fileID: 762202500239763221}
+  - {fileID: 8975500515164150049}
   _descriptions:
   - {fileID: 6568187544454404258}
   - {fileID: 7585692122268670950}

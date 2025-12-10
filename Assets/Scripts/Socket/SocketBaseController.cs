@@ -104,34 +104,10 @@ namespace Starport.Sockets
         {
             if (!IsServer) return;
 
-            CurrentPickup = SpawnInitialPickup();
-
-            if (CurrentPickup != null)
-            {
-                CurrentPickup.Rigidbody.isKinematic = true;
-                if (_socketArea != null)
-                {
-                    CurrentPickup.transform.SetPositionAndRotation(_socketArea.transform.position, _socketArea.transform.rotation);
-                }
-
-                CurrentPickup.transform.SetParent(transform, true);
-            }
-
             if (CurrentPickup != null) SocketFilled();
             else SocketEmptied();
 
             OnSocketUpdate?.Invoke(CurrentPickup);
-        }
-
-        protected virtual PickupController SpawnInitialPickup()
-        {
-            if(DefaultPickup == null) return null;
-
-            GameObject g = Instantiate(DefaultPickup.gameObject, transform.position, Quaternion.identity);
-            PickupController p = g.GetComponent<PickupController>();
-            p.NetworkObject.Spawn();
-
-            return p;
         }
 
         protected virtual PickupController GetValidPickup(PickupController[] potentialSocketables)
@@ -149,5 +125,17 @@ namespace Starport.Sockets
         protected virtual void SocketEmptied() { }
         protected virtual void SocketFilled() { }
         
+        public virtual void SpawnPickupInSocket(float percent) { }
+
+        public virtual void ClearSocket()
+        {
+            if (!IsServer) return;
+            if (CurrentPickup == null) return;
+
+            CurrentPickup.NetworkObject.Despawn(true);
+            CurrentPickup = null;
+            OnSocketUpdate?.Invoke(null);
+        }
+
     }
 }

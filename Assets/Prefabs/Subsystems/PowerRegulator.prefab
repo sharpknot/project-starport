@@ -118,6 +118,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Starport.UI.ControlPanel.UICPPowerRegulator
   _powerRegulator: {fileID: 8675194566623032783}
   _slider: {fileID: 457679090466693460}
+  _frequencyRawImage: {fileID: 8627672802791972544}
   _currentText: {fileID: 180638522255298513}
   _currentNormalColor: {r: 0, g: 0, b: 0, a: 1}
   _activatedColor: {r: 0, g: 0.49056602, b: 0.0013677309, a: 1}
@@ -762,7 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2188619767
+  GlobalObjectIdHash: 436924396
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -855,8 +856,11 @@ MonoBehaviour:
   OnPercentageUpdateEvent:
     m_PersistentCalls:
       m_Calls: []
+  _hideableInitializedObjects:
+  - {fileID: 1286579573313987258}
   _description: {fileID: 5548599618923970181}
   _interactable: {fileID: 3475569288131743144}
+  FrequencyRender: {fileID: 0}
 --- !u!114 &200222262863281463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -869,7 +873,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 978ca87e3c08bd0429c5da0e36e9263e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Starport.UICPPowerFrequencyTextureRenderer
-  RenderTextureOutput: {fileID: 8400000, guid: 8adeb8e16cbe580429823a2f8aa725c1, type: 2}
+  <RenderTextureOutput>k__BackingField: {fileID: 0}
   _width: 512
   _height: 256
   _targetColor:
@@ -1102,7 +1106,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 8adeb8e16cbe580429823a2f8aa725c1, type: 2}
+  m_Texture: {fileID: 0}
   m_UVRect:
     serializedVersion: 2
     x: 0

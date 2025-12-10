@@ -33,7 +33,6 @@ namespace Starport.Subsystems
             UpdateDescription();
         }
 
-
         private void UpdateDescription()
         {
             if (_description == null) return;

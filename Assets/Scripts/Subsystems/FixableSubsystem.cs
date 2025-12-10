@@ -14,12 +14,6 @@ namespace Starport.Subsystems
         [SerializeField, BoxGroup("Fixable Params"), Required] 
         private FixableController _fixable;
 
-        [SerializeField, BoxGroup("Fixable Params"), Range(0f, 1f)] 
-        private float _fullyFixedChance = 0.5f;
-
-        [SerializeField, BoxGroup("Fixable Params"), MinMaxSlider(0f, 0.99f)]
-        private Vector2 _brokenRange = new(0f, 0.5f);
-
         [SerializeField, ReadOnly] private float _debugCurrentFixAmount;
         public float CurrentFixAmount => Percent.Value;
 
@@ -41,7 +35,6 @@ namespace Starport.Subsystems
             OnPercentageUpdate -= OnFixAmountUpdate;
             UnsubscribeServerEvents();
 
-
             base.OnNetworkDespawn();
         }
 
@@ -51,43 +44,21 @@ namespace Starport.Subsystems
             _debugCurrentFixAmount = CurrentFixAmount;
         }
 
-        private void InitializeFixValues()
+        public override void InitializeSubSystem(float completionAmount = 1)
         {
+            base.InitializeSubSystem(completionAmount);
             if (!IsServer) return;
-            if(_fixable == null)
+
+            _fixable.FixedAmount = Mathf.Clamp01(completionAmount);
+        }
+
+        public override void Deinitialize()
+        {
+            if (IsServer)
             {
-                IsLocallyActive.Value = true;
-                return;
+                _fixable.FixedAmount = 1f;
             }
-
-            _fixable.IsFixable = true;
-
-            bool fullyFixed = false;
-            if(_fullyFixedChance >= 1f)
-            {
-                fullyFixed = true;
-            }
-            else if(_fullyFixedChance <= 0f)
-            {
-                fullyFixed = false;
-            }
-            else
-            {
-                fullyFixed = Random.Range(0f, 1f) <= _fullyFixedChance;
-            }
-
-            float fixedVal = 1f;
-
-            if(!fullyFixed)
-            {
-                fixedVal = Random.Range(_brokenRange.x, _brokenRange.y);
-            }
-
-            _fixable.FixedAmount = fixedVal;
-            Percent.Value = fixedVal;
-
-            IsLocallyActive.Value = CurrentFixAmount >= 1f;
-
+            base.Deinitialize();
         }
 
         private void SubscribeServerEvents()
@@ -131,6 +102,23 @@ namespace Starport.Subsystems
 
             InitializeFixValues();
             SubscribeServerEvents();
+        }
+
+        private void InitializeFixValues()
+        {
+            if (!IsServer) return;
+            if (_fixable == null)
+            {
+                IsLocallyActive.Value = true;
+                return;
+            }
+
+            _fixable.IsFixable = true;
+            _fixable.FixedAmount = 1f;
+            Percent.Value = 1f;
+
+            IsLocallyActive.Value = CurrentFixAmount >= 1f;
+
         }
     }
 }
