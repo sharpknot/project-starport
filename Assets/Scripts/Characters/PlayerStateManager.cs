@@ -94,7 +94,8 @@ namespace Starport.Characters
         {
             if(FirstPersonCamera != null)
             {
-                FirstPersonCamera.Prioritize();
+                if(CameraManager.Instance)
+                    CameraManager.Instance.PrioritizeCamera(FirstPersonCamera);
                 FirstPersonCamera.gameObject.SetActive(true);
             }
 
@@ -150,7 +151,13 @@ namespace Starport.Characters
                 return;
             }
 
-            Camera mainCam = Camera.main;
+            if(CameraManager.Instance == null)
+            {
+                Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: CameraManager.Instance missing");
+                return;
+            }
+
+            Camera mainCam = CameraManager.Instance.MainCamera;
             if(mainCam == null )
             {
                 Debug.LogError($"[PlayerStateManager] AddRenderCameraToStack failed: Main camera is null");

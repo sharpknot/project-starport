@@ -1,5 +1,6 @@
 using NaughtyAttributes;
 using Starport.Characters;
+using Starport.Pickups;
 using Starport.Sockets;
 using System.Collections;
 using Unity.Netcode;
@@ -14,7 +15,6 @@ namespace Starport.Subsystems
         [SerializeField] private DescriptionController[] _descriptions;
         [SerializeField, Required] private ReactorCoreSocketController _coreSocket;
         [SerializeField] private InteractableController _interactable;
-        [SerializeField] private bool _randomizeMinEnergy = true;
         
         [SerializeField, BoxGroup("Animator")] private Animator _animator;
         [SerializeField, BoxGroup("Animator"), AnimatorParam("_animator", AnimatorControllerParameterType.Bool)]
@@ -25,7 +25,7 @@ namespace Starport.Subsystems
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner
             );
-        private NetworkVariable<bool> _isClosed = new(
+        private NetworkVariable<bool> _enclosureOpened = new(
             false, 
             NetworkVariableReadPermission.Everyone, 
             NetworkVariableWritePermission.Owner
@@ -40,26 +40,21 @@ namespace Starport.Subsystems
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            _isClosed.OnValueChanged += EnclosureUpdate;
-            OnPercentageUpdate += CurrentEnergyUpdate;
-            _minEnergy.OnValueChanged += MinEnergyUpdate;
 
             StartCoroutine(InitializeServer());
-
-            EnclosureUpdate(false, false);  // Force value update
-            CurrentEnergyUpdate(0f);
+            StartCoroutine(InitializeClient());
         }
 
         public override void OnNetworkDespawn()
         {
-            _isClosed.OnValueChanged -= EnclosureUpdate;
-            OnPercentageUpdate -= CurrentEnergyUpdate;
+            StopAllCoroutines();
+
             _minEnergy.OnValueChanged -= MinEnergyUpdate;
+            OnPercentageUpdate -= CurrentEnergyUpdate;
+            _enclosureOpened.OnValueChanged -= EnclosureUpdate;
 
             if (_interactable != null)
-                _interactable.OnInteractAttemptResultServer -= ToggleEnclosure;
-
-            StopAllCoroutines();
+                _interactable.OnInteractAttemptResultServer -= ServerToggleEnclosure;
 
             base.OnNetworkDespawn();
         }
@@ -69,75 +64,63 @@ namespace Starport.Subsystems
             base.InitializeSubSystem(completionAmount);
 
             if (!IsServer) return;
-            if (_coreSocket == null || !_coreSocket.NetworkObject.IsSpawned) return;
-            _coreSocket.ClearSocket();
 
-            float minEnergy = 0f;
-            if (_randomizeMinEnergy)
-                minEnergy = Random.Range(0f, 1f);
-            _minEnergy.Value = minEnergy;
-            Percent.Value = 0f;
+            if (_coreSocket == null || !_coreSocket.NetworkObject.IsSpawned)
+                return;
+
+            _minEnergy.Value = Random.Range(0f, 1f);
 
             float finalEnergy = Random.Range(_minEnergy.Value, 1f);
-            if(completionAmount < 1f)
+            if (completionAmount < 1f)
                 finalEnergy = Random.Range(0f, _minEnergy.Value);
 
-            
-            _coreSocket.SpawnPickupInSocket(finalEnergy);
-            Percent.Value = _coreSocket.GetCurrentEnergy();
-
-            OpenEnclosure(false);
-            EnclosureUpdate(false, false);  // Force value update
-            CurrentEnergyUpdate(0f);
+            _coreSocket.SpawnPickupInSocket(new() { CapacityPercent = finalEnergy });
+            Percent.Value = finalEnergy;
+            _enclosureOpened.Value = false;
         }
 
         public override void Deinitialize()
         {
             base.Deinitialize();
             if (!IsServer) return;
-            if(_coreSocket == null) return;
+
+            _minEnergy.Value = 0f;
+            Percent.Value = 0f;
+            _enclosureOpened.Value = true;
+
+            if (_coreSocket == null || !_coreSocket.NetworkObject.IsSpawned)
+                return;
 
             _coreSocket.ClearSocket();
 
-            Percent.Value = 0f;
         }
 
         private void EnclosureUpdate(bool prev, bool current)
         {
-            if (IsServer)
-            {
-                if (_coreSocket != null)
-                {
-                    if(_coreSocket.CurrentPickup != null)
-                        _coreSocket.CurrentPickup.SetAllowPickup(!_isClosed.Value);
-
-                    if (!_isClosed.Value)
-                        Percent.Value = 0f;
-                    else
-                        Percent.Value = _coreSocket.GetCurrentEnergy();
-                }
-
-                if(_interactable != null)
-                {
-                    if (_isClosed.Value)
-                        _interactable.SetDescription(_openEnclosureText);
-                    else
-                        _interactable.SetDescription(_closeEnclosureText);
-                }
-            }
-
             UpdateDescription();
+
+            if (!IsServer) return;
+
+            _animator.SetBool(_isOpenParam, _enclosureOpened.Value);
+            UpdateInteractable();
+
+            // Update the percentage
+            float finalPercentage = 0f;
+            if(_coreSocket != null && _coreSocket.NetworkObject.IsSpawned && _coreSocket.CurrentPickup != null)
+            {
+                finalPercentage = Mathf.Clamp01(_coreSocket.CurrentPickup.CurrentState.CapacityPercent);
+            }
+            Percent.Value = finalPercentage;
         }
 
         private void CurrentEnergyUpdate(float current)
         {
+            UpdateDescription();
+            UpdateLocallyActive();
             OnEnergyUpdate?.Invoke(CurrentEnergy, MinEnergy);
         }
 
-        private void MinEnergyUpdate(float prev, float current)
-        {
-            OnEnergyUpdate?.Invoke(CurrentEnergy, MinEnergy);
-        }
+        private void MinEnergyUpdate(float prev, float current) => CurrentEnergyUpdate(Percent.Value);
 
         private void UpdateDescription()
         {
@@ -150,7 +133,7 @@ namespace Starport.Subsystems
                 $"\nStatus: ";
 
             string status = "";
-            if(!_isClosed.Value)
+            if(_enclosureOpened.Value)
             {
                 status = "Unpowered (Enclosure opened)";
             }
@@ -178,62 +161,66 @@ namespace Starport.Subsystems
             }
         }
 
+        private void UpdateInteractable()
+        {
+            if (!IsServer) return;
+            if (_interactable == null || !_interactable.NetworkObject.IsSpawned)
+                return;
+
+            string text = _openEnclosureText;
+            if(_enclosureOpened.Value)
+                text = _closeEnclosureText;
+
+            _interactable.SetDescription(text);
+        }
+
+        private void UpdateLocallyActive()
+        {
+            if (!IsServer) return;
+
+            IsLocallyActive.Value = Percent.Value >= _minEnergy.Value;
+        }
+
         private IEnumerator InitializeServer()
         {
             if(!IsServer)
                 yield break;
 
-            Percent.Value = 0f;
-            _minEnergy.Value = 0f;
-
-            if (_coreSocket == null)
+            if(_interactable != null)
             {
-                OpenEnclosure(false);
-                yield break;
+                while(!_interactable.NetworkObject.IsSpawned)
+                    yield return null;
+
+                _interactable.OnInteractAttemptResultServer += ServerToggleEnclosure;
             }
 
-            while(!_coreSocket.NetworkObject.IsSpawned)
-                yield return null;
+            if(_coreSocket != null)
+            {
+                while(!_coreSocket.NetworkObject.IsSpawned)
+                    yield return null;
+            }
 
+            _enclosureOpened.OnValueChanged += EnclosureUpdate;
+        }
+
+        private IEnumerator InitializeClient()
+        {
             if (_interactable != null)
             {
-                _interactable.OnInteractAttemptResultServer += ToggleEnclosure;
-                _interactable.SetDescription(_openEnclosureText);
+                while (!_interactable.NetworkObject.IsSpawned)
+                    yield return null;
             }
 
-            float minEnergy = 0f;
-            if (_randomizeMinEnergy)
-                minEnergy = Random.Range(0f, 1f);
+            CurrentEnergyUpdate(Percent.Value);
 
-            _minEnergy.Value = minEnergy;
-
-            Percent.Value = _coreSocket.GetCurrentEnergy();
-            OpenEnclosure(false);
+            _minEnergy.OnValueChanged += MinEnergyUpdate;
+            OnPercentageUpdate += CurrentEnergyUpdate;
         }
 
-        private void OpenEnclosure(bool open)
+        private void ServerToggleEnclosure(bool interactResult, CharacterNetworkManager characterNetworkManager)
         {
             if (!IsServer) return;
-
-            _isClosed.Value = !open;
-
-            if(_animator  != null)
-                _animator.SetBool(_isOpenParam, open);
-
-            IsLocallyActive.Value = (CurrentEnergy >= _minEnergy.Value);
+            _enclosureOpened.Value = !_enclosureOpened.Value;
         }
-
-        private void ToggleEnclosure(bool interactResult, CharacterNetworkManager characterNetworkManager)
-        {
-            if (!IsServer) return;
-            if (!interactResult) return;
-
-            OpenEnclosure(_isClosed.Value);
-        }
-
-        [Button]
-        private void DebugOpenEnclosure() => OpenEnclosure(true);
-        [Button]
-        private void DebugCloseEnclosure() => OpenEnclosure(false);
     }
 }

@@ -402,8 +402,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Starport.UI.Systems.UIPowerSystemDisplay
   _powerSystem: {fileID: 0}
   _subsystemDisplay: {fileID: 2724431483339071691, guid: d7f12f437a5093d40a9fdb460bc980a5, type: 3}
-  _subsystemPanel: {fileID: 3962937245126354514}
-  _pipesPanel: {fileID: 9038002707234477292}
+  _subsystemPanel: {fileID: 0}
+  _pipesPanel: {fileID: 0}
   _activeDisplay: {fileID: 2889169246119511197}
   _inactiveDisplay: {fileID: 4131303496295022674}
 --- !u!1 &4601630122962099177

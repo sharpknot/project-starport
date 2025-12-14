@@ -49,7 +49,7 @@ namespace Starport.Characters
             KillPickupAttemptSequence();
             KillToPlayerProcess();
             if (_pickupToAttempt != null)
-                _pickupToAttempt.OnPickupAttemptResult -= PickupAttemptResult;
+                _pickupToAttempt.PickupAttemptResult -= PickupAttemptResult;
         }
 
         private void OnValidate()
@@ -69,7 +69,7 @@ namespace Starport.Characters
 
             _hasCurrentPickup = false;
             _pickupToAttempt = CurrentPickable;
-            _pickupToAttempt.OnPickupAttemptResult += PickupAttemptResult;
+            _pickupToAttempt.PickupAttemptResult += PickupAttemptResult;
             _pickupAttempt = DOTween.Sequence().AppendInterval(_pickupAttemptDuration).AppendCallback(PickupAttemptFailed);
             _pickupToAttempt.AttemptPickup();
         }
@@ -212,7 +212,7 @@ namespace Starport.Characters
         private void PickupAttemptResult(bool success)
         {
             if (_pickupToAttempt != null)
-                _pickupToAttempt.OnPickupAttemptResult -= PickupAttemptResult;
+                _pickupToAttempt.PickupAttemptResult -= PickupAttemptResult;
 
             if (success) PickupAttemptSuccess();
             else PickupAttemptFailed();

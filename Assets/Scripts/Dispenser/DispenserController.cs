@@ -20,11 +20,14 @@ namespace Starport.Dispenser
         public event UnityAction OnDispenseFailHasBlockage, OnDispenseFailReachedLimit;
         public event UnityAction<PickupController> OnDispenseSuccess;
 
-        [field: SerializeField, Range(1, 200)] 
+        [field: SerializeField, Range(1, 200)]
         public int SpawnableLimit { get; private set; } = 100;
         private List<PickupController> _spawned;
 
         [SerializeField] private string _interactDescription = "Dispense item";
+
+        [BoxGroup("Spawn State Values"), SerializeField, Range(0f, 1f)]
+        private float _stateCapacityPercent = 1f;
 
         private readonly NetworkVariable<int> _currentSpawnedCount = new(
             0,
@@ -92,6 +95,12 @@ namespace Starport.Dispenser
             GameObject g = Instantiate(_pickupToSpawn.gameObject, _spawnVolume.transform.position, _spawnVolume.transform.rotation);
             PickupController pc = g.GetComponent<PickupController>();
             pc.NetworkObject.Spawn(false);
+
+            PickupStateValues initialState = new()
+            {
+                CapacityPercent = _stateCapacityPercent
+            };
+            pc.SetState(initialState);
 
             _spawned.Add(pc);
             _currentSpawnedCount.Value = _spawned.Count;

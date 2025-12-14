@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8980504283389120836}
   - component: {fileID: 8610679608911809139}
-  - component: {fileID: 6232734177265760076}
+  - component: {fileID: 8107563525643617685}
+  - component: {fileID: 3316188776969308810}
   m_Layer: 0
   m_Name: SocketVolume
   m_TagString: Untagged
@@ -54,7 +55,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.55, y: 0.75, z: 0.55}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6232734177265760076
+--- !u!114 &8107563525643617685
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,9 +64,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 192204768071990076}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f109540e1c998b74581b57a2bed04837, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Starport.TriggerHelper
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3707585912
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 8
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &3316188776969308810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 192204768071990076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa34158cc0c1ab45a76692a5e3c2fd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Starport.NetworkTriggerHelper
 --- !u!1 &4185368266905751456
 GameObject:
   m_ObjectHideFlags: 0
@@ -147,7 +173,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1757676940
+  GlobalObjectIdHash: 3862515795
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -219,11 +245,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Starport.Sockets.ReactorCoreSocketController
   ShowTopMostFoldoutHeaderGroup: 1
-  _socketArea: {fileID: 6232734177265760076}
+  _socketArea: {fileID: 3316188776969308810}
   <DefaultPickup>k__BackingField: {fileID: 4917004213254048078, guid: 57a88fc17d57035419b0c33c8f0a66d1, type: 3}
   <CurrentPickup>k__BackingField: {fileID: 0}
   _previousPickup: {fileID: 0}
-  _randomizeInitialEnergy: 1
 --- !u!1001 &5639249677922557510
 PrefabInstance:
   m_ObjectHideFlags: 0

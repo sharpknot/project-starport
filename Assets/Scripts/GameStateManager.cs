@@ -40,6 +40,11 @@ namespace Starport
             DontDestroyOnLoad(gameObject);
         }
 
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+        }
+
         private string _targetJoinCode = string.Empty;
         public bool IsAttemptingToJoinHost(out string targetJoinCode)
         {
@@ -67,5 +72,11 @@ namespace Starport
         }
         public void ClearNextScene() => _nextScene = string.Empty;
         public void SetNextScene(string nextScene) => _nextScene = nextScene;
+
+        public void OnApplicationFocus(bool focus)
+        {
+            if (focus)
+                Cursor.lockState = CursorLockMode.Confined;
+        }
     }
 }

@@ -7,4 +7,5 @@
   <Project Path="ALINEEditor.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="ALINEPackageToolsEditor.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

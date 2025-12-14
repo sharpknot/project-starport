@@ -39,20 +39,25 @@ namespace Starport.Subsystems
         {
             base.OnNetworkSpawn();
 
-            if (!IsServer) return;
+            StartCoroutine(InitializeServer());
 
-            _validSockets = GetValidSockets();
-            Percent.Value = GetCurrentCapacity();
-
-            IsLocallyActive.Value = GetUpdatedLocallyActive(CurrentCapacity, _minCapacity.Value);
             OnCapacityUpdated?.Invoke(CurrentCapacity, IsCurrentlyLocallyActive);
 
-            SubscribeEvents();
         }
 
         public override void OnNetworkDespawn()
         {
-            UnsubscribeEvents();
+            StopAllCoroutines();
+
+            if(_validSockets !=null)
+            {
+                foreach (var socket in _validSockets)
+                {
+                    if (socket == null) continue;
+                    socket.OnSocketUpdate -= SocketUpdated;
+                }
+            }
+
             base.OnNetworkDespawn();
         }
 
@@ -86,17 +91,24 @@ namespace Starport.Subsystems
                 var socket = sockets[index];
                 sockets.RemoveAt(index);
 
-                if(targetNetAmount <= 0f)
+                PickupStateValues initState = new()
+                {
+                    CapacityPercent = 0f
+                };
+
+                if (targetNetAmount <= 0f)
                 {
                     bool spawn = Random.Range(0f, 1f) > 0.5f;
                     if (spawn)
-                        socket.SpawnPickupInSocket(0f);
+                        socket.SpawnPickupInSocket(initState);
                     continue;
                 }
 
                 float cap = Random.Range(0f, 1f);
                 targetNetAmount -= cap;
-                socket.SpawnPickupInSocket(cap);
+
+                initState.CapacityPercent = cap;
+                socket.SpawnPickupInSocket(initState);
             }
         }
 
@@ -118,30 +130,9 @@ namespace Starport.Subsystems
             return (float)Random.Range(_minCapacityRange.x, _minCapacityRange.y + 1) / 10f;
         }
 
-        private void SubscribeEvents()
-        {
-            UnsubscribeEvents();
-            if (_validSockets == null) return;
+        private void SocketUpdated(PickupController pickup) => UpdateCanisterValues();
 
-            foreach (var socket in _validSockets)
-            {
-                if (socket == null) continue;
-                socket.OnCanisterSocketUpdate += UpdateCanisterValues;
-            }
-        }
-
-        private void UnsubscribeEvents()
-        {
-            if(_validSockets == null) return;
-
-            foreach(var socket in _validSockets)
-            {
-                if(socket == null) continue;
-                socket.OnCanisterSocketUpdate -= UpdateCanisterValues;
-            }
-        }
-
-        private void UpdateCanisterValues(FluidCanister canister, float capacity)
+        private void UpdateCanisterValues()
         {
             float curCapacity = GetCurrentCapacity();
             bool localActive = GetUpdatedLocallyActive(curCapacity, MinCapacity);
@@ -183,9 +174,9 @@ namespace Starport.Subsystems
             foreach(var fs in _validSockets)
             {
                 if (fs == null) continue;
-                if(!fs.HasCanister(out float curCap)) continue;
+                if(fs.CurrentPickup == null) continue;
 
-                capacity += curCap;
+                capacity += Mathf.Clamp01(fs.CurrentPickup.CurrentState.CapacityPercent);
             }
 
             return capacity / (float) _validSockets.Length;
@@ -197,6 +188,40 @@ namespace Starport.Subsystems
                 return false;
 
             return currentCapacity >= minCapacity;
+        }
+
+        private IEnumerator InitializeServer()
+        {
+            if(!IsServer) yield break;
+
+            _validSockets = GetValidSockets();
+
+            while(true)
+            {
+                bool allSpawned = true;
+                foreach(var fs in _validSockets)
+                {
+                    if(fs==null) continue;
+                    if(fs.IsSpawned) continue;
+
+                    allSpawned = false;
+                }
+
+                if (allSpawned) break;
+
+                yield return null;
+            }
+
+            Percent.Value = GetCurrentCapacity();
+            IsLocallyActive.Value = GetUpdatedLocallyActive(CurrentCapacity, _minCapacity.Value);
+
+            foreach (var socket in _validSockets)
+            {
+                if (socket == null) continue;
+                socket.OnSocketUpdate += SocketUpdated;
+            }
+
+
         }
     }
 }

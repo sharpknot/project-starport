@@ -19,6 +19,7 @@ namespace Starport
             NetworkVariableWritePermission.Server
             );
 
+        public bool HasTask => _hasTask.Value;
         private NetworkVariable<bool> _hasTask = new(
             false, 
             NetworkVariableReadPermission.Everyone, 
@@ -65,6 +66,16 @@ namespace Starport
             OnPlayerInWorkingAreaUpdate?.Invoke(HasPlayerInWorkingArea);
             OnTaskReadyToCompleteUpdate?.Invoke(TaskReadyToComplete);
 
+            if (_hasTask.Value)
+            {
+                OnTaskStarted?.Invoke();
+            }
+            else
+            {
+                double elapsedTime = NetworkManager.ServerTime.Time - _taskStartTime.Value;
+                OnTaskCompleted?.Invoke(elapsedTime);
+            }
+
             _taskStartTime.OnValueChanged += TaskStartTimeUpdate;
             _hasTask.OnValueChanged += HasTaskUpdate;
             _hasPlayerInWorkingArea.OnValueChanged += PlayerInWorkingAreaUpdate;
@@ -105,11 +116,18 @@ namespace Starport
             return true;
         }
 
+        public bool CanStartNewTask()
+        {
+            if(HasCurrentTask(out _)) return false;
+            if(HasPlayerInWorkingArea) return false;
+            return true;
+        }
+
         [Button("Spawn Task", EButtonEnableMode.Playmode)]
         public bool StartTask()
         {
             if (!IsServer) return false;
-            if(HasCurrentTask(out _)) return false;
+            if(!CanStartNewTask()) return false;
 
             StartCoroutine(SpawnTask());
             return true;
@@ -132,25 +150,25 @@ namespace Starport
         {
             if (!IsServer)
             {
-                Debug.LogError($"[GameTaskManager] CanCompleteTask failed: Not the server!");
+                Debug.Log($"[GameTaskManager] CanCompleteTask failed: Not the server!");
                 return false; 
             }
 
             if (!HasCurrentTask(out _))
             {
-                Debug.LogError($"[GameTaskManager] CanCompleteTask failed: No current task!");
+                Debug.Log($"[GameTaskManager] CanCompleteTask failed: No current task!");
                 return false;
             }
 
             if (!TaskReadyToComplete)
             {
-                Debug.LogError($"[GameTaskManager] CanCompleteTask failed: TaskReadyToComplete false!");
+                Debug.Log($"[GameTaskManager] CanCompleteTask failed: TaskReadyToComplete false!");
                 return false;
             }
 
             if (HasPlayerInWorkingArea)
             {
-                Debug.LogError($"[GameTaskManager] CanCompleteTask failed: HasPlayerInWorkingArea true!");
+                Debug.Log($"[GameTaskManager] CanCompleteTask failed: HasPlayerInWorkingArea true!");
                 return false;
             }
 

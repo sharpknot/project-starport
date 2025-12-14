@@ -36,6 +36,11 @@ namespace Starport.UI.Systems
             _powerSystem.OnRegulatorSubsystemsUpdated += SubsystemUpdated;
         }
 
+        private void Update()
+        {
+            UpdateActivationDisplayState();
+        }
+
         private void OnDestroy()
         {
             _powerSystem.OnSystemActiveUpdated -= UpdateActivationState;
@@ -45,6 +50,17 @@ namespace Starport.UI.Systems
             _powerSystem.OnReactorSubsystemsUpdated -= SubsystemUpdated;
             _powerSystem.OnGeneratorSubsystemsUpdated -= SubsystemUpdated;
             _powerSystem.OnRegulatorSubsystemsUpdated -= SubsystemUpdated;
+        }
+
+        private void UpdateActivationDisplayState()
+        {
+            if(_powerSystem ==null || !_powerSystem.IsSpawned)
+            {
+                UpdateActivationState(false);
+                return;
+            }
+
+            UpdateActivationState(_powerSystem.IsSystemActive);
         }
 
         private void UpdateActivationState(bool active)

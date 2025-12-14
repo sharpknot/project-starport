@@ -14,15 +14,15 @@ namespace Starport.Display
 
         private void Update()
         {
-            if (_socket == null)
+            if (_socket == null || !_socket.IsSpawned)
             {
                 UpdateNoCanister();
                 return;
             }
 
-            if (_socket.HasCanister(out float capacity))
+            if (_socket.CurrentPickup != null)
             {
-                UpdateHasCanister(capacity);
+                UpdateHasCanister(_socket.CurrentPickup.CurrentState.CapacityPercent);
                 return;
             }
 

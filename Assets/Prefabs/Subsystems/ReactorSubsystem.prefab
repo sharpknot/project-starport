@@ -698,7 +698,6 @@ MonoBehaviour:
   - {fileID: 4310433451014386038}
   _coreSocket: {fileID: 5068564103328751153}
   _interactable: {fileID: 8337920910222343637}
-  _randomizeMinEnergy: 1
   _animator: {fileID: 4363731422177804374}
   _isOpenParam: isOpened
 --- !u!1 &5040882211639321022

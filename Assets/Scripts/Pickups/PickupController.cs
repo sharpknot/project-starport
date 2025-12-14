@@ -33,7 +33,14 @@ namespace Starport.Pickups
 
         private bool _isAttemptingPickup = false;
 
-        public event UnityAction<bool> OnPickupAttemptResult;
+        public event UnityAction<bool> PickupAttemptResult;
+        public PickupStateValues CurrentState => _state.Value;
+        private NetworkVariable<PickupStateValues> _state = new(
+            default,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner
+            );
+        public event UnityAction<PickupStateValues> StateUpdate;
 
         public Rigidbody Rigidbody
         {
@@ -52,6 +59,19 @@ namespace Starport.Pickups
             NetworkVariableWritePermission.Server
             );
 
+        public override void OnNetworkSpawn()
+        {
+            base.OnNetworkSpawn();
+
+            _state.OnValueChanged += OnStateUpdated;
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            _state.OnValueChanged -= OnStateUpdated;
+            base.OnNetworkDespawn();
+        }
+
         public bool IsPickedUp(out ulong pickerClientId) => OwnershipController.HasOwner(out pickerClientId);
 
         public void SetAllowPickup(bool allow)
@@ -67,7 +87,7 @@ namespace Starport.Pickups
         {
             if (_isAttemptingPickup || IsPickedUp(out _) || !PickupAllowed())
             {
-                OnPickupAttemptResult?.Invoke(false);
+                PickupAttemptResult?.Invoke(false);
                 return;
             }
 
@@ -86,6 +106,17 @@ namespace Starport.Pickups
             Description.ShowDescription = true;
             OwnershipController.ResetOwnership();
             ThrowServerRpc(force);
+        }
+
+        public void SetState(PickupStateValues state)
+        {
+            if (!IsOwner) return;
+            _state.Value = state;
+        }
+
+        private void OnStateUpdated(PickupStateValues prev, PickupStateValues current)
+        {
+            StateUpdate?.Invoke(CurrentState);
         }
 
         public override void OnDestroy()
@@ -126,7 +157,7 @@ namespace Starport.Pickups
 
             Description.ShowDescription = false;
 
-            OnPickupAttemptResult?.Invoke(true);
+            PickupAttemptResult?.Invoke(true);
         }
 
         private void PickupFailed()
@@ -136,13 +167,23 @@ namespace Starport.Pickups
 
             Description.ShowDescription = true;
 
-            OnPickupAttemptResult?.Invoke(false);
+            PickupAttemptResult?.Invoke(false);
         }
 
         [Rpc(SendTo.Server)]
         private void ThrowServerRpc(Vector3 force)
         {
             Rigidbody.AddForce(force, ForceMode.Impulse);
+        }
+    }
+
+    public struct PickupStateValues : INetworkSerializable
+    {
+        public float CapacityPercent;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref CapacityPercent);
         }
     }
 }

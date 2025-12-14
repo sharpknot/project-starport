@@ -257,7 +257,8 @@ namespace Starport
             }
 
             // Change camera
-            _camera.Prioritize();
+            if (CameraManager.Instance != null)
+                CameraManager.Instance.PrioritizeCamera(_camera);
 
             if(_controlPanelUi != null)
             {
